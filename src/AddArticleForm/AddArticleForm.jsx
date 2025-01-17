@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { Upload, Loader2 } from 'lucide-react';
 import useAxiosSecure from '../Hooks/useAxiosSecure';
 import useAuth from '../Hooks/useAuth';
-import { imageUpload } from '../Api/utils'; // Your image upload utility
+import { imageUpload } from '../Api/utils';
 
 const tagOptions = [
   { value: 'technology', label: 'Technology' },
@@ -17,19 +17,21 @@ const tagOptions = [
 ];
 
 const AddArticleForm = () => {
-  const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [publishers, setPublishers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     publisher: null,
     tags: [],
     description: '',
     image: null,
+    user: null,
   });
 
+  // Fetch publishers on component mount
   useEffect(() => {
     const fetchPublishers = async () => {
       try {
@@ -38,6 +40,7 @@ const AddArticleForm = () => {
           response.data.map((pub) => ({
             value: pub._id,
             label: pub.name,
+            logo: pub.logo,
           }))
         );
       } catch (error) {
@@ -46,7 +49,27 @@ const AddArticleForm = () => {
     };
 
     fetchPublishers();
-  }, []);
+  }, [axiosSecure]);
+
+  // Fetch users and their roles/plans
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await axiosSecure.get('/users'); // Endpoint to fetch users
+        const mappedUsers = response.data.map((user) => ({
+          value: user._id,
+          label: `${user.name} (${user.email})`,
+          role: user.role,
+          plan: user.plan,
+        }));
+        setUsers(mappedUsers);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [axiosSecure]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -64,21 +87,25 @@ const AddArticleForm = () => {
     try {
       let imageUrl = '';
       if (formData.image) {
-        imageUrl = await imageUpload(formData.image); // Upload image and get URL
+        imageUrl = await imageUpload(formData.image);
       }
+
+      const selectedUser = users.find((user) => user.value === formData.user?.value);
 
       const articleData = {
         title: formData.title,
         publisher: formData.publisher?.value,
-        PublisherName:formData.publisher?.label,
+        PublisherName: formData.publisher?.label,
+        publisherLogo: formData.publisher?.logo,
         tags: formData.tags.map((tag) => tag.value),
         description: formData.description,
         imageUrl,
         status: 'pending',
         createdAt: new Date().toISOString(),
-        name: user?.displayName,
-        email: user?.email,
-        authorImage: user?.photoURL,
+        name: selectedUser?.label || '',
+        email: selectedUser?.email || '',
+        role: selectedUser?.role || '',
+        plan: selectedUser?.plan || '',
       };
 
       await axiosSecure.post('/articles', articleData);
@@ -89,6 +116,7 @@ const AddArticleForm = () => {
         tags: [],
         description: '',
         image: null,
+        user: null,
       });
       setImagePreview(null);
     } catch (error) {
@@ -134,6 +162,8 @@ const AddArticleForm = () => {
               required
             />
           </div>
+
+        
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>

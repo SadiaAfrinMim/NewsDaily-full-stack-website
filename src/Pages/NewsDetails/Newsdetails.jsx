@@ -74,6 +74,13 @@ const NewsDetails = () => {
             alt={article.title}
             className="w-full h-full object-cover"
           />
+
+<div className='flex gap-2 items-center'>
+                  <img className='w-10 h-10 rounded-full' src={article.
+publisherLogo} alt="" />
+                  <p>{article.
+PublisherName}</p>
+                </div>
           <div className={`absolute bottom-0 left-0 right-0 ${
             article.isPremium ? 'bg-gradient-to-t from-yellow-900/70 to-transparent' : 'bg-gradient-to-t from-black/70 to-transparent'
           } p-6`}>

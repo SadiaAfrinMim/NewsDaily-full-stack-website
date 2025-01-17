@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAxiosSecure from '../Hooks/useAxiosSecure';
 
-// Component for the "All Articles" Page
 const AllArticlesPage = () => {
   const axiosSecure = useAxiosSecure();
   const [articles, setArticles] = useState([]);
@@ -38,7 +37,11 @@ const AllArticlesPage = () => {
           tags: selectedTags.join(','),
         },
       });
-      setArticles(response.data);
+      // Filter only the articles with the status "Approved"
+      const approvedArticles = response.data.filter(
+        (article) => article.status === 'Approved'
+      );
+      setArticles(approvedArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);
     } finally {
@@ -75,7 +78,7 @@ const AllArticlesPage = () => {
           >
             <option value="">All Publishers</option>
             {publishers.map((publisher) => (
-              <option key={publisher.id} value={publisher.id}>
+              <option key={publisher._id} value={publisher._id}>
                 {publisher.name}
               </option>
             ))}
@@ -101,26 +104,47 @@ const AllArticlesPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
           <div className="text-center col-span-3">Loading...</div>
+        ) : articles.length === 0 ? (
+          <div className="text-center col-span-3 text-gray-500">
+            No approved articles found.
+          </div>
         ) : (
           articles.map((article) => {
             const publisher = publishers.find(
-              (pub) => pub.id === article.publisher
-            ); // Match publisher by ID
+              (pub) => pub._id === article.publisher
+            );
 
             return (
               <div
                 key={article._id}
-                className={`p-6 border rounded-lg shadow-md ${article.isPremium ? 'bg-yellow-100' : 'bg-white'}`}
+                className={`p-6 border rounded-lg shadow-md ${
+                  article.plan ? 'bg-yellow-100' : 'bg-white'
+                }`}
               >
-                <img src={article.imageUrl} alt={article.title} className="w-full h-48 object-cover rounded-md mb-4" />
+                <img
+                  src={article.imageUrl}
+                  alt={article.title}
+                  className="w-full h-48 object-cover rounded-md mb-4"
+                />
+                <div className="flex gap-2 items-center">
+                  <img
+                    className="w-10 h-10 rounded-full"
+                    src={article.publisherLogo || '/default-logo.png'}
+                    alt={article.PublisherName || 'Publisher'}
+                  />
+                  <p>{article.PublisherName || 'Unknown Publisher'}</p>
+                </div>
                 <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
                 <p className="text-sm text-gray-600 mb-4">{article.description}</p>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">{publisher?.name}</span>
                   <span
-                    className={`text-sm font-semibold ${article.isPremium ? 'text-red-500' : 'text-gray-500'}`}
+                    className={`text-sm font-semibold ${
+                      article.plan ? 'text-red-500' : 'text-gray-500'
+                    }`}
                   >
-                    {article.isPremium ? 'Premium' : 'Normal'}
+                    {article.
+plan ? 'premium' : 'Normal'}
                   </span>
                 </div>
 
@@ -128,13 +152,15 @@ const AllArticlesPage = () => {
                 <Link
                   to={`/article/${article._id}`}
                   className={`mt-4 inline-block py-2 px-4 text-white rounded-md ${
-                    article.isPremium && !article.isSubscribed
+                    article.plan && !article.isSubscribed
                       ? 'bg-gray-500 cursor-not-allowed'
                       : 'bg-purple-600 hover:bg-purple-700'
                   }`}
-                  disabled={article.isPremium && !article.isSubscribed}
+                  disabled={article.plan && !article.isSubscribed}
                 >
-                  {article.isPremium && !article.isSubscribed ? 'Subscribe to View' : 'View Details'}
+                  {article.plan && !article.isSubscribed
+                    ? 'Subscribe to View'
+                    : 'View Details'}
                 </Link>
               </div>
             );
