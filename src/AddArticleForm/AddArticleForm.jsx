@@ -36,27 +36,23 @@ const AddArticleForm = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axiosSecure.get('/users'); // এখানে ইউজারের API URL
-  
-        // ইউজারের ইমেইল চেক করে ডাটা ফিল্টার করা
-        const filteredData = response.data.filter((use) => use.email === user.email);
-  
-        // যদি মেলানো ইমেইল পাওয়া যায়, তাহলে ডাটা সেভ করা
-        if (filteredData.length > 0) {
-          setUserData(filteredData.map((use) => ({
-            email: use.email,   // ইউজারের ইমেইল
-            role: use.role,     // ইউজারের রোল
-            plan: use.plan,     // ইউজারের প্ল্যান
-          })));
-        } else {
-          console.log('No matching email found');
-        }
-  
-      } catch (error) {
+       
+          const response = await axiosSecure.get('/users'); // এখানে ইউজারের API URL
+    
+          // ইউজারের ইমেইল চেক করে ডাটা ফিল্টার করা
+          const filteredData = response.data.filter((use) => use.email === user.email);
+    
+          // যদি মেলানো ইমেইল পাওয়া যায়, তাহলে ডাটা সেভ করা
+          if (filteredData.length > 0) {
+            setUserData(filteredData.map((use) => ({
+              email: use.email,   // ইউজারের ইমেইল
+              role: use.role,     // ইউজারের রোল
+              plan: use.plan,     // ইউজারের প্ল্যান
+            }))); //
+      }} catch (error) {
         console.error('Error fetching user data:', error);
       }
     };
-  
 
     fetchUserData();
   }, []); // এই useEffect ফাংশনটি কম্পোনেন্ট মাউন্ট হলে একবার চালু হবে
