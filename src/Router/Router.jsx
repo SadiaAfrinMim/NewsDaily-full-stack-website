@@ -17,6 +17,7 @@ import AdminDashboard from "../Pages/Dashboard/AdminDashboard/AdminDashboard";
 import AllUsersPage from "../Pages/Dashboard/AllUsersPage/AllUsersPage";
 import AllArticles from "../Pages/Dashboard/AllArticlesPage/AllArticles";
 import AddPublisher from "../Pages/Dashboard/AddPublisher/AddPublisher";
+import SubscriptionSuccess from "../Pages/SubscriptionPage/SubscriptionSuccess";
 
 
 
@@ -85,7 +86,12 @@ export const router = createBrowserRouter([
 {
     path: '/admin/publishers',
     element:<AddPublisher></AddPublisher>
+},
+{
+    path:'/subscription-success',
+    element: <SubscriptionSuccess></SubscriptionSuccess>
 }
+
 
 ]
     },

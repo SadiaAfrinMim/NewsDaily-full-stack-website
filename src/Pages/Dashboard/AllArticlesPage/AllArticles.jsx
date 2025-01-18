@@ -23,7 +23,7 @@ const AllArticles = () => {
     fetchArticles();
   }, [axiosSecure]);
 
-  // Handle status updates
+  // Handle status updates (approve/decline)
   const handleArticleAction = async (action, articleId, reason = "") => {
     try {
       const payload = { articleId, reason, action };
@@ -79,18 +79,20 @@ const AllArticles = () => {
     }
   };
 
-  // Handle make premium
+  // Handle making article premium
   const handleMakePremium = async (articleId) => {
     try {
-      await axiosSecure.patch(`/articles/${articleId}/premium`);
-      const updatedArticles = articles.map((article) =>
-        article._id === articleId ? { ...article, isPremium: true } : article
-      );
-      setArticles(updatedArticles);
-      toast.success("Article set as premium successfully");
+      const response = await axiosSecure.patch(`/articles/${articleId}/premium`);
+      if (response.status === 200) {
+        const updatedArticles = articles.map((article) =>
+          article._id === articleId ? { ...article, isPremium: true } : article
+        );
+        setArticles(updatedArticles);
+        toast.success("Article marked as premium");
+      }
     } catch (error) {
-      console.error("Failed to set article as premium:", error);
-      toast.error("Failed to set article as premium");
+      console.error("Failed to make article premium:", error);
+      toast.error("Failed to mark article as premium");
     }
   };
 

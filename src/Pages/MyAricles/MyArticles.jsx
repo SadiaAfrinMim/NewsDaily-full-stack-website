@@ -11,19 +11,21 @@ const MyArticles = () => {
   const [declineReason, setDeclineReason] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axiosSecure.get('/articles'); // Fetch all articles
+        const response = await axiosSecure.get('/articles');
         const userArticles = response.data.filter(
-          (article) => article.email === user?.email // Filter by user's email
+          (article) => article.email === user?.email
         );
-        setArticles(userArticles); // Set filtered articles
+        setArticles(userArticles);
       } catch (error) {
         console.error('Error fetching articles:', error);
+        setError('Failed to fetch articles. Please try again later.');
       } finally {
-        setIsLoading(false); // Stop loading spinner
+        setIsLoading(false);
       }
     };
 
@@ -39,6 +41,7 @@ const MyArticles = () => {
         setArticles((prev) => prev.filter((article) => article._id !== id));
       } catch (error) {
         console.error('Error deleting article:', error);
+        setError('Failed to delete the article. Please try again later.');
       }
     }
   };
@@ -80,6 +83,10 @@ const MyArticles = () => {
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">My Articles</h2>
+
+      {/* Show error message if any */}
+      {error && <div className="text-red-500 mt-4">{error}</div>}
+
       <div className="overflow-x-auto">
         <table className="table-auto w-full border-collapse border border-gray-200">
           <thead>
@@ -106,25 +113,21 @@ const MyArticles = () => {
                   </button>
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {article.status === 'declined' ? (
+                  {article.status === 'Declined' ? (
                     <>
                       <span className="text-red-500">Declined</span>
                       <button
-                        onClick={() => handleViewDeclineReason(article.declineReason)}
+                        onClick={() => handleViewDeclineReason(article.reason)}
                         className="ml-2 text-sm text-blue-500 underline"
                       >
                         Why?
                       </button>
                     </>
-                  ) : (
-                    <span
-                      className={`${
-                        article.status === 'approved' ? 'text-green-500' : 'text-yellow-500'
-                      }`}
-                    >
-                      {article.status}
-                    </span>
-                  )}
+                  ) : article.status === 'approved' ? (
+                    <span className="text-green-500">Approved</span>
+                  ) : article.status === 'pending' ? (
+                    <span className="text-yellow-500">Pending</span>
+                  ) : null}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
                   {article.isPremium ? 'Yes' : 'No'}
@@ -158,7 +161,7 @@ const MyArticles = () => {
         >
           <div className="bg-white p-6 rounded-md shadow-md w-1/3">
             <h3 className="text-lg font-bold mb-4">Decline Reason</h3>
-            <p className="text-gray-700">{declineReason}</p>
+            <p className="text-gray-700">{declineReason || 'No reason provided'}</p>
             <button
               onClick={closeModal}
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

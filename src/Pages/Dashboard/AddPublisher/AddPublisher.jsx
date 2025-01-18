@@ -38,11 +38,15 @@ const AddPublisher = () => {
       return;
     }
 
+    const publisherData = {
+      name: publisherName,
+      logo: publisherLogo,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
     try {
-      const response = await axiosSecure.post('/publishers', {
-        name: publisherName,
-        logo: publisherLogo,
-      });
+      const response = await axiosSecure.post('/publishers', publisherData);
       if (response.status === 200) {
         toast.success('Publisher added successfully');
         setPublisherName('');

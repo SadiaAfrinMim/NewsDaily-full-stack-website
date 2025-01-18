@@ -1,123 +1,93 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Crown, Clock, Shield, Link } from 'lucide-react';
-import Payment from './Payment';
+import useAuth from '../../Hooks/useAuth';
 
 const SubscriptionPage = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState('1');
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
+  
+  const [selectedPlan, setSelectedPlan] = useState(5); // Default plan duration (5 days)
+  const [price, setPrice] = useState(10); // Default price for 5 days
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const subscriptionPlans = {
-    '1': { days: '1 minute', price: 0.99, savings: '0%' },
-    '5': { days: '5 days', price: 4.99, savings: '15%' },
-    '10': { days: '10 days', price: 8.99, savings: '25%' }
-  };
+  useEffect(() => {
+    // Update the price based on the selected plan
+    switch (selectedPlan) {
+      case 1:
+        setPrice(1);  // Price for 1 minute plan
+        break;
+      case 5:
+        setPrice(10); // Price for 5 days plan
+        break;
+      case 10:
+        setPrice(18); // Price for 10 days plan
+        break;
+      default:
+        setPrice(10); // Default value for unhandled plan
+    }
+  }, [selectedPlan]);
 
-  const features = [
-    'Unlimited Article Access',
-    'Premium Content',
-    'Ad-Free Experience',
-    'Early Access to News',
-    'Exclusive Interviews'
-  ];
+  const handleSubscription = () => {
+    setLoading(true);
+    setError('');
+    try {
+      // Navigate to the payment page with selected price and duration
+      let planDurationInMilliseconds;
 
-  const handleSubscribe = () => {
-    navigate('/payment', { 
-      state: { 
-        plan: subscriptionPlans[selectedPeriod],
-        price: subscriptionPlans[selectedPeriod].price,
-        duration: selectedPeriod 
-      } 
-    });
+      // Calculate the duration in milliseconds
+      if (selectedPlan === 1) {
+        planDurationInMilliseconds = 1 * 60 * 1000; // 1 minute in milliseconds
+      } else {
+        planDurationInMilliseconds = selectedPlan * 24 * 60 * 60 * 1000; // Days to milliseconds
+      }
+
+      // Navigate to the payment page
+      navigate('/payment', { state: { price, planDuration: planDurationInMilliseconds } });
+    } catch (err) {
+      setError('Something went wrong, please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-blue-600 h-72">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-blue-600 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-600/90" />
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Upgrade to Premium
-            </h1>
-            <p className="mt-6 max-w-lg mx-auto text-xl text-blue-100">
-              Get unlimited access to all our premium content and exclusive features
-            </p>
-          </div>
-        </div>
+    <div className="container mx-auto p-4">
+      <div className="banner bg-blue-600 text-white p-6 rounded-lg text-center">
+        <h1 className="text-3xl font-bold">Upgrade to Premium</h1>
+        <p>Get access to exclusive content and features.</p>
       </div>
 
-      {/* Subscription Card */}
-      <div className="max-w-4xl mx-auto px-4 pb-24 pt-16">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="p-8">
-            <div className="flex items-center justify-center space-x-2 mb-8">
-              <Crown className="w-8 h-8 text-yellow-500" />
-              <h2 className="text-3xl font-bold text-gray-900">Premium Membership</h2>
-            </div>
-
-            {/* Plan Selection */}
-            <div className="mb-8">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Subscription Period
-              </label>
-              <select
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-                className="mt-1 block w-full pl-3 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md"
-              >
-                <option value="1">1 Minute (Demo) - ${subscriptionPlans['1'].price}</option>
-                <option value="5">5 Days - ${subscriptionPlans['5'].price} (Save {subscriptionPlans['5'].savings})</option>
-                <option value="10">10 Days - ${subscriptionPlans['10'].price} (Save {subscriptionPlans['10'].savings})</option>
-              </select>
-            </div>
-
-            {/* Features List */}
-            <div className="space-y-4 mb-8">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center">
-                  <Check className="w-5 h-5 text-green-500 mr-3" />
-                  <span className="text-gray-600">{feature}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Price Display */}
-            <div className="text-center mb-8">
-              <p className="text-5xl font-bold text-gray-900">
-                ${subscriptionPlans[selectedPeriod].price}
-              </p>
-              <p className="text-gray-500 mt-2">
-                for {subscriptionPlans[selectedPeriod].days}
-              </p>
-            </div>
-
-            {/* Subscribe Button */}
-            <button
-              onClick={handleSubscribe}
-              className="w-full bg-blue-600 text-white px-6 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
-            >
-              Subscribe Now
-            </button>
-
-            {/* Additional Info */}
-            <div className="mt-6 flex justify-center space-x-6 text-sm text-gray-500">
-              <div className="flex items-center">
-                <Clock className="w-4 h-4 mr-1" />
-                <span>Instant Access</span>
-              </div>
-              <div className="flex items-center">
-                <Shield className="w-4 h-4 mr-1" />
-                <span>Secure Payment</span>
-              </div>
-            </div>
-          </div>
+      <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
+        <h2 className="text-xl font-semibold">Choose Your Subscription Plan</h2>
+        
+        <div className="mt-4">
+          <label htmlFor="plan" className="block text-lg">Select Subscription Duration:</label>
+          <select
+            id="plan"
+            value={selectedPlan}
+            onChange={(e) => setSelectedPlan(parseInt(e.target.value))}
+            className="mt-2 w-full p-2 border rounded-lg"
+          >
+            <option value={1}>1 minute (For assignment checking)</option>
+            <option value={5}>5 days</option>
+            <option value={10}>10 days</option>
+          </select>
         </div>
+
+        <div className="mt-4">
+          <p className="text-lg">Price: ${price}</p>
+        </div>
+
+        {error && <div className="mt-4 text-red-500">{error}</div>}
+
+        <button
+          onClick={handleSubscription}
+          className="mt-6 w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-medium"
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : 'Proceed to Payment'}
+        </button>
       </div>
     </div>
   );
