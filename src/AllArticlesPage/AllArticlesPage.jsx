@@ -144,7 +144,7 @@ const AllArticlesPage = () => {
                     }`}
                   >
                     {article.
-plan ? 'premium' : 'Normal'}
+plan ? 'premium' : 'normal'}
                   </span>
                 </div>
 

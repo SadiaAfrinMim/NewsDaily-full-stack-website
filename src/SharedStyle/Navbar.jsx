@@ -5,10 +5,10 @@ import useAuth from '../Hooks/useAuth';
 import toast from 'react-hot-toast';
 
 const Navbar = () => {
-  const { user, logOut } = useAuth(); // Get user data and logout function from useAuth
-  const navigate = useNavigate(); // For navigation after logout
-  const [isAdmin, setIsAdmin] = React.useState(false); // For admin visibility
-  const [hasSubscription, setHasSubscription] = React.useState(false); // For premium visibility
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [hasSubscription, setHasSubscription] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
 
@@ -17,76 +17,83 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logOut();
-      navigate('/login'); // Redirect to login page after logout
+      navigate('/login');
     } catch (error) {
       toast.error('Logout failed:', error);
     }
   };
 
   const handleProfileClick = () => {
-    setDropdownVisible(!dropdownVisible); // Toggle dropdown visibility
+    setDropdownVisible(!dropdownVisible);
   };
 
   return (
     <div className="relative">
-      <nav className="bg-gradient-to-r from-purple-700 via-purple-600 to-purple-700 text-white">
+      <nav className="bg-gradient-to-r from-red-800 via-red-600 to-red-800 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo & Brand */}
-            <div className="flex-shrink-0 flex items-center">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo & Brand with new styling */}
+            <div className="flex-shrink-0 flex items-center bg-red-900 p-3 rounded-b-lg shadow-md transform hover:scale-105 transition-transform duration-200">
               <BookOpen className="h-8 w-8" />
-              <span className="ml-2 text-xl font-bold">ArticleHub</span>
+              <span className="ml-2 text-2xl font-bold bg-gradient-to-r from-red-100 to-white bg-clip-text text-transparent">
+                ArticleHub
+              </span>
             </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
-              <a href="/" className="hover:bg-purple-500 px-3 py-2 rounded-md">Home</a>
-              <a href="/add-articles" className="hover:bg-purple-500 px-3 py-2 rounded-md flex items-center">
-                <PenSquare className="w-4 h-4 mr-1" />
-                Add Articles
-              </a>
-              <a href="/all-articles" className="hover:bg-purple-500 px-3 py-2 rounded-md">All Articles</a>
-              <a href="/subscription" className="hover:bg-purple-500 px-3 py-2 rounded-md flex items-center">
-                <Crown className="w-4 h-4 mr-1" />
-                Subscription
-              </a>
-
-              <a href="/my-articles" className="hover:bg-purple-500 px-3 py-2 rounded-md">My Articles</a>
-             
-{/* 
-              {isAdmin && ( */}
-                <a href="/admindashboard" className="hover:bg-purple-500 px-3 py-2 rounded-md flex items-center">
-                  <Layout className="w-4 h-4 mr-1" />
-                  Dashboard
+            {/* Desktop Navigation with new hover effects */}
+            <div className="hidden md:flex items-center space-x-2">
+              {[
+                { href: "/", text: "Home" },
+                { href: "/add-articles", text: "Add Articles", icon: <PenSquare className="w-4 h-4" /> },
+                { href: "/all-articles", text: "All Articles" },
+                { href: "/subscription", text: "Subscription", icon: <Crown className="w-4 h-4" /> },
+                { href: "/my-articles", text: "My Articles" },
+                { href: "/admindashboard", text: "Dashboard", icon: <Layout className="w-4 h-4" /> }
+              ].map((item) => (
+                <a
+                  key={item.text}
+                  href={item.href}
+                  className="relative group px-4 py-2 rounded-md hover:bg-red-700 transition-all duration-200"
+                >
+                  <div className="flex items-center space-x-1">
+                    {item.icon && <span>{item.icon}</span>}
+                    <span>{item.text}</span>
+                  </div>
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
                 </a>
-              {/* )} */}
+              ))}
 
               {hasSubscription && (
-                <a href="/premium" className="bg-yellow-500 text-black px-3 py-2 rounded-md flex items-center">
+                <a href="/premium" className="bg-yellow-500 text-black px-4 py-2 rounded-md flex items-center hover:bg-yellow-400 transition-colors duration-200">
                   <Crown className="w-4 h-4 mr-1" />
                   Premium
                 </a>
               )}
             </div>
 
-            {/* Auth Section */}
+            {/* Auth Section with enhanced styling */}
             <div className="hidden md:flex items-center space-x-4">
               {user ? (
                 <div className="flex items-center space-x-4">
-                  <Bell className="w-5 h-5 cursor-pointer hover:text-purple-200" />
+                  <div className="relative">
+                    <Bell className="w-5 h-5 cursor-pointer hover:text-red-200 transition-colors duration-200" />
+                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-yellow-500 rounded-full"></span>
+                  </div>
                   <div className="relative group">
                     <img
                       src={user?.photoURL || '/api/placeholder/40/40'}
                       alt="Profile"
-                      className="w-10 h-10 rounded-full cursor-pointer border-2 border-purple-300 hover:border-white"
-                      onClick={handleProfileClick} // Trigger dropdown on image click
+                      className="w-12 h-12 rounded-full cursor-pointer border-2 border-red-300 hover:border-white transition-all duration-200 transform hover:scale-105"
+                      onClick={handleProfileClick}
                     />
                     {dropdownVisible && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                        <a href="/profile" className="block px-4 py-2 text-gray-800 hover:bg-purple-100">My Profile</a>
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-10">
+                        <a href="/profile" className="block px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200">
+                          My Profile
+                        </a>
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2 text-gray-800 hover:bg-purple-100"
+                          className="w-full text-left px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200"
                         >
                           Logout
                         </button>
@@ -95,56 +102,59 @@ const Navbar = () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-x-2">
-                  <Link to="/login" className="bg-purple-500 hover:bg-purple-400 px-4 py-2 rounded-md">
+                <div className="space-x-3">
+                  <Link to="/login" className="bg-red-700 hover:bg-red-600 px-6 py-2 rounded-md transition-colors duration-200 shadow-md">
                     Login
                   </Link>
-                  <Link to="/signup" className="bg-white text-purple-700 hover:bg-purple-100 px-4 py-2 rounded-md">
+                  <Link to="/signup" className="bg-white text-red-700 hover:bg-red-50 px-6 py-2 rounded-md transition-colors duration-200 shadow-md">
                     Register
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* Mobile menu button */}
+            {/* Mobile menu button with animation */}
             <div className="md:hidden flex items-center">
-              <button onClick={toggleMobileMenu} className="inline-flex items-center justify-center p-2 rounded-md hover:bg-purple-500">
+              <button 
+                onClick={toggleMobileMenu} 
+                className="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-700 transition-colors duration-200"
+              >
                 <Menu className="h-6 w-6" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu with smooth animation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden animate-fadeIn">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="/" className="block px-3 py-2 rounded-md hover:bg-purple-500">Home</a>
-              <a href="/add-articles" className="block px-3 py-2 rounded-md hover:bg-purple-500">Add Articles</a>
-              <a href="/all-articles" className="block px-3 py-2 rounded-md hover:bg-purple-500">All Articles</a>
-              <a href="/subscription" className="block px-3 py-2 rounded-md hover:bg-purple-500">Subscription</a>
+              <a href="/" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">Home</a>
+              <a href="/add-articles" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">Add Articles</a>
+              <a href="/all-articles" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">All Articles</a>
+              <a href="/subscription" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">Subscription</a>
               {isAdmin && (
-                <a href="/dashboard" className="block px-3 py-2 rounded-md hover:bg-purple-500">Dashboard</a>
+                <a href="/dashboard" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">Dashboard</a>
               )}
               {hasSubscription && (
-                <a href="/premium" className="block px-3 py-2 rounded-md bg-yellow-500 text-black">Premium</a>
+                <a href="/premium" className="block px-3 py-2 rounded-md bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200">Premium</a>
               )}
               {user ? (
                 <>
-                  <a href="/profile" className="block px-3 py-2 rounded-md hover:bg-purple-500">My Profile</a>
+                  <a href="/profile" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">My Profile</a>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 rounded-md hover:bg-purple-500"
+                    className="block w-full text-left px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200"
                   >
                     Logout
                   </button>
                 </>
               ) : (
-                <div className="space-y-1">
-                  <Link to="/login" className="block w-full text-left px-3 py-2 rounded-md bg-purple-500 hover:bg-purple-400">
+                <div className="space-y-2">
+                  <Link to="/login" className="block w-full text-left px-3 py-2 rounded-md bg-red-700 hover:bg-red-600 transition-colors duration-200">
                     Login
                   </Link>
-                  <Link to="/signup" className="block w-full text-left px-3 py-2 rounded-md bg-white text-purple-700 hover:bg-purple-100">
+                  <Link to="/signup" className="block w-full text-left px-3 py-2 rounded-md bg-white text-red-700 hover:bg-red-50 transition-colors duration-200">
                     Register
                   </Link>
                 </div>

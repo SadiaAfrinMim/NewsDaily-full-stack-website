@@ -18,6 +18,7 @@ import AllUsersPage from "../Pages/Dashboard/AllUsersPage/AllUsersPage";
 import AllArticles from "../Pages/Dashboard/AllArticlesPage/AllArticles";
 import AddPublisher from "../Pages/Dashboard/AddPublisher/AddPublisher";
 import SubscriptionSuccess from "../Pages/SubscriptionPage/SubscriptionSuccess";
+import ProfilePage from "../Pages/Profile/ProfilePage";
 
 
 
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
         path:"/",
         element:<Home></Home>
 
+      },
+      {
+        path:'/profile',
+        element:<ProfilePage></ProfilePage>
       },
     {
         path: '/login',

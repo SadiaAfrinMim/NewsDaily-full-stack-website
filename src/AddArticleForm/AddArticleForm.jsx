@@ -110,7 +110,8 @@ const AddArticleForm = () => {
         views: 0, // Set initial views to 0
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(), // Set initial updatedAt to current time
-        email: user?.email
+        email: user?.email,
+        AuthorImage: user?.photoURL
       };
 
       await axiosSecure.post('/articles', articleData); // Submit article

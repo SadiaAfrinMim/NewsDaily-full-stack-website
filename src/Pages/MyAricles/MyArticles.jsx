@@ -123,7 +123,7 @@ const MyArticles = () => {
                         Why?
                       </button>
                     </>
-                  ) : article.status === 'approved' ? (
+                  ) : article.status === 'Approved' ? (
                     <span className="text-green-500">Approved</span>
                   ) : article.status === 'pending' ? (
                     <span className="text-yellow-500">Pending</span>

@@ -4,33 +4,30 @@ import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import useAuth from '../../../Hooks/useAuth';
 
 export default function AllUsersPage() {
-  const { user } = useAuth(); // Get current logged-in user info
+  const { user } = useAuth();
   const [users, setUsers] = useState([]);
-  const axiosSecure = useAxiosSecure(); // Axios hook for secure API calls
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
-    // Fetch all users from the backend
     const fetchUsers = async () => {
       try {
         const response = await axiosSecure.get('/users');
-        setUsers(response.data); // Set users data to state
+        setUsers(response.data);
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to fetch users');
       }
     };
-    fetchUsers(); // Call function to get users when component mounts
+    fetchUsers();
   }, [axiosSecure]);
 
   const handleRoleChange = async (userId, newRole) => {
     try {
-      // API call to update user role
       const response = await axiosSecure.patch(`/users/${userId}/role`, {
         role: newRole,
       });
 
       if (response.status === 200) {
-        // Update users state after role change
         setUsers(
           users.map((user) =>
             user._id === userId ? { ...user, role: newRole } : user
@@ -45,65 +42,82 @@ export default function AllUsersPage() {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-5">All Users</h1>
-      <div className="overflow-x-auto">
-        <table className="table table-zebra w-full">
-          <thead>
-            <tr>
-              <th>Profile Picture</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td>
-                  <img
-                    src={user.image || '/placeholder.svg'} // Default image if not available
-                    alt={`${user.name}'s profile`}
-                    className="w-10 h-10 rounded-full"
-                  />
-                </td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
-                  <span
-                    className={`badge ${
-                      user.role === 'admin' ? 'badge-success' : 'badge-secondary'
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h1 className="text-3xl font-bold text-red-800 mb-8 border-b-2 border-red-200 pb-4">
+            User Management Dashboard
+          </h1>
+          
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-red-200">
+              <thead>
+                <tr className="bg-red-50">
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-red-900">Profile</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-red-900">Name</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-red-900">Email</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-red-900">Role</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-red-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-red-100">
+                {users.map((user, index) => (
+                  <tr 
+                    key={user._id}
+                    className={`hover:bg-red-50 transition-colors duration-150 ease-in-out ${
+                      index % 2 === 0 ? 'bg-white' : 'bg-red-50/30'
                     }`}
                   >
-                    {user.role}
-                  </span>
-                </td>
-                <td>
-                  {/* Allow changing roles only if the logged-in user is admin */}
-                  {user.role !== 'admin' && (
-                    <button
-                      onClick={() => handleRoleChange(user._id, 'admin')}
-                      className="btn btn-primary"
-                    >
-                      Make Admin
-                    </button>
-                  )}
-
-                  {/* Allow changing normal role to admin only if user is admin */}
-                  {user.role === 'admin' && (
-                    <button
-                      onClick={() => handleRoleChange(user._id, 'normal')}
-                      className="btn btn-secondary"
-                    >
-                      Make Normal
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <img
+                          src={user.image || '/api/placeholder/40/40'}
+                          alt={`${user.name}'s profile`}
+                          className="w-10 h-10 rounded-full object-cover border-2 border-red-200"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-600">{user.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          user.role === 'admin'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {user.role !== 'admin' && (
+                        <button
+                          onClick={() => handleRoleChange(user._id, 'admin')}
+                          className="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200 ease-in-out mr-2"
+                        >
+                          Make Admin
+                        </button>
+                      )}
+                      {user.role === 'admin' && (
+                        <button
+                          onClick={() => handleRoleChange(user._id, 'normal')}
+                          className="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200 ease-in-out"
+                        >
+                          Make Normal
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );

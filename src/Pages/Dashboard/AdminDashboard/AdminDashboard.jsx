@@ -1,66 +1,97 @@
 import React, { useState, useEffect } from 'react';
 import { Chart } from 'react-google-charts';
-
 import { Link, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Users, BookOpen, Building2, Loader2 } from 'lucide-react';
+import { Users, BookOpen, Building2, Loader2 } from 'lucide-react';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
+import { User, Briefcase, FileText } from 'lucide-react';
 
 const AdminDashboard = () => {
   const axiosSecure = useAxiosSecure();
   const [loading, setLoading] = useState(true);
-  const [publisherStats, setPublisherStats] = useState([]);
-  const [monthlyArticles, setMonthlyArticles] = useState([]);
-  const [userActivity, setUserActivity] = useState([]);
+  const [stats, setStats] = useState({
+    users: 0,
+    publishers: 0,
+    articles: 0,
+    publisherStats: [],
+    monthlyArticles: [],
+    userActivity: []
+  });
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [articlesRes, usersRes] = await Promise.all([
+        const [articlesRes, usersRes, publishersRes] = await Promise.all([
           axiosSecure.get('/articles'),
-          axiosSecure.get('/users/activity')
+          axiosSecure.get('/users'),
+          axiosSecure.get('/publishers')
         ]);
 
+        // Basic counts
+        const users = usersRes.data;
+        const publishers = publishersRes.data;
+        const articles = articlesRes.data;
+
         // Process publisher statistics
-        const publisherCounts = {};
-        articlesRes.data.forEach(article => {
-          publisherCounts[article.publisher] = (publisherCounts[article.publisher] || 0) + 1;
+        const publisherArticleCounts = {};
+        articles.forEach(article => {
+          const publisherName = article.PublisherName; // Using PublisherName from article
+          if (publisherName) {
+            publisherArticleCounts[publisherName] = (publisherArticleCounts[publisherName] || 0) + 1;
+          }
         });
 
-        const totalArticles = Object.values(publisherCounts).reduce((a, b) => a + b, 0);
-        const publisherData = [['Publisher', 'Percentage']];
-        Object.entries(publisherCounts).forEach(([publisher, count]) => {
-          const percentage = (count / totalArticles) * 100;
-          publisherData.push([publisher, percentage]);
+        // Prepare publisher data for PieChart
+        const publisherData = [['Publisher', 'Articles']];
+        Object.entries(publisherArticleCounts).forEach(([publisher, count]) => {
+          publisherData.push([publisher, count]);
         });
-        setPublisherStats(publisherData);
 
-        // Process monthly article counts
-        const monthlyData = [['Month', 'Articles Published']];
-        const last6Months = Array.from({ length: 6 }, (_, i) => {
-          const date = new Date();
-          date.setMonth(date.getMonth() - i);
-          return date.toLocaleString('default', { month: 'short' });
-        }).reverse();
+        // Sort by the number of articles
+        publisherData.sort((a, b) => b[1] - a[1]);
 
-        last6Months.forEach(month => {
-          const count = articlesRes.data.filter(article => 
-            new Date(article.createdAt).toLocaleString('default', { month: 'short' }) === month
-          ).length;
-          monthlyData.push([month, count]);
+        // Process monthly articles data
+        const monthlyData = [['Month', 'Articles']];
+        const monthCounts = {};
+
+        articles.forEach(article => {
+          const date = new Date(article.createdAt);
+          const monthYear = date.toLocaleString('default', { month: 'short', year: '2-digit' });
+          monthCounts[monthYear] = (monthCounts[monthYear] || 0) + 1;
         });
-        setMonthlyArticles(monthlyData);
 
-        // Process user activity
-        const activityData = [['Category', 'Active', 'Inactive']];
-        const categories = ['Writers', 'Publishers', 'Readers'];
-        categories.forEach(category => {
-          const active = Math.floor(Math.random() * 50) + 30; // Simulated data
-          const inactive = Math.floor(Math.random() * 20) + 10;
-          activityData.push([category, active, inactive]);
+        // Get the last 6 months of data
+        Object.entries(monthCounts)
+          .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+          .slice(0, 6)
+          .reverse()
+          .forEach(([month, count]) => {
+            monthlyData.push([month, count]);
+          });
+
+        // Process user activity by role
+        const usersByRole = {
+          user: users.filter(user => user.role).length,
+          admin: users.filter(user => user.role === 'admin').length,
+          publisher: publishers.length
+        };
+
+        const userActivityData = [
+          ['Role', 'Count'],
+          ['Users', usersByRole.user],
+          ['Admins', usersByRole.admin],
+          ['Publishers', usersByRole.publisher]
+        ];
+
+        // Update the state with fetched data
+        setStats({
+          users: users.length,
+          publishers: publishers.length,
+          articles: articles.length,
+          publisherStats: publisherData,
+          monthlyArticles: monthlyData,
+          userActivity: userActivityData
         });
-        setUserActivity(activityData);
-
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -74,7 +105,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <Loader2 className="animate-spin h-8 w-8 text-purple-600" />
+        <Loader2 className="animate-spin h-8 w-8 text-red-600" />
       </div>
     );
   }
@@ -84,25 +115,25 @@ const AdminDashboard = () => {
       {/* Sidebar */}
       <div className="w-64 bg-white shadow-lg">
         <div className="p-4">
-          <h2 className="text-xl font-bold text-purple-600 mb-6">Admin Dashboard</h2>
+          <h2 className="text-xl font-bold text-red-600 mb-6">Admin Dashboard</h2>
           <nav className="space-y-2">
             <Link
               to="/admin/users"
-              className="flex items-center gap-2 p-2 rounded hover:bg-purple-50 text-gray-700 hover:text-purple-600"
+              className="flex items-center gap-2 p-2 rounded hover:bg-red-50 text-gray-700 hover:text-red-600"
             >
               <Users size={20} />
               All Users
             </Link>
             <Link
               to="/admin/articles"
-              className="flex items-center gap-2 p-2 rounded hover:bg-purple-50 text-gray-700 hover:text-purple-600"
+              className="flex items-center gap-2 p-2 rounded hover:bg-red-50 text-gray-700 hover:text-red-600"
             >
               <BookOpen size={20} />
               All Articles
             </Link>
             <Link
               to="/admin/publishers"
-              className="flex items-center gap-2 p-2 rounded hover:bg-purple-50 text-gray-700 hover:text-purple-600"
+              className="flex items-center gap-2 p-2 rounded hover:bg-red-50 text-gray-700 hover:text-red-600"
             >
               <Building2 size={20} />
               Add Publisher
@@ -113,16 +144,52 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1 p-8">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+      {/* Users Section */}
+      <div className="bg-white p-6 rounded-lg shadow flex items-center gap-4">
+        <div className="p-4 bg-red-100 rounded-full">
+          <User className="h-8 w-8 text-red-600" /> {/* User Icon */}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-1">Users</h3>
+          <p className="text-2xl font-bold text-red-600">{stats.users}</p>
+        </div>
+      </div>
+
+      {/* Publishers Section */}
+      <div className="bg-white p-6 rounded-lg shadow flex items-center gap-4">
+        <div className="p-4 bg-red-100 rounded-full">
+          <Briefcase className="h-8 w-8 text-red-600" /> {/* Briefcase Icon */}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-1">Publishers</h3>
+          <p className="text-2xl font-bold text-red-600">{stats.publishers}</p>
+        </div>
+      </div>
+
+      {/* Articles Section */}
+      <div className="bg-white p-6 rounded-lg shadow flex items-center gap-4">
+        <div className="p-4 bg-red-100 rounded-full">
+          <FileText className="h-8 w-8 text-red-600" /> {/* FileText Icon */}
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-1">Articles</h3>
+          <p className="text-2xl font-bold text-red-600">{stats.articles}</p>
+        </div>
+      </div>
+    </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Publisher Distribution Chart */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">Publisher Distribution</h3>
+            <h3 className="text-lg font-semibold mb-4">Articles by Publisher</h3>
             <Chart
               chartType="PieChart"
-              data={publisherStats}
+              data={stats.publisherStats}
               options={{
                 pieHole: 0.4,
-                colors: ['#7C3AED', '#9F7AEA', '#C4B5FD'],
+                colors: ['#EF4444', '#F87171', '#FECACA', '#FEE2E2', '#FCA5A5'],
                 legend: { position: 'bottom' },
                 chartArea: { width: '100%', height: '70%' },
               }}
@@ -133,12 +200,12 @@ const AdminDashboard = () => {
 
           {/* Monthly Articles Chart */}
           <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold mb-4">Monthly Articles Published</h3>
+            <h3 className="text-lg font-semibold mb-4">Articles Published (Last 6 Months)</h3>
             <Chart
               chartType="LineChart"
-              data={monthlyArticles}
+              data={stats.monthlyArticles}
               options={{
-                colors: ['#7C3AED'],
+                colors: ['#EF4444'],
                 legend: { position: 'none' },
                 chartArea: { width: '80%', height: '70%' },
                 hAxis: { title: 'Month' },
@@ -148,20 +215,21 @@ const AdminDashboard = () => {
               height="300px"
             />
           </div>
+        </div>
 
-          {/* User Activity Chart */}
-          <div className="bg-white p-6 rounded-lg shadow md:col-span-2">
-            <h3 className="text-lg font-semibold mb-4">User Activity Distribution</h3>
+        {/* User Role Distribution Chart */}
+        <div className="mt-6">
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">User Role Distribution</h3>
             <Chart
               chartType="BarChart"
-              data={userActivity}
+              data={stats.userActivity}
               options={{
-                colors: ['#7C3AED', '#E5E7EB'],
-                legend: { position: 'top' },
+                colors: ['#EF4444'],
+                legend: { position: 'none' },
                 chartArea: { width: '80%', height: '70%' },
                 hAxis: { title: 'Number of Users' },
-                vAxis: { title: 'Category' },
-                isStacked: true,
+                vAxis: { title: 'Role' },
               }}
               width="100%"
               height="300px"
@@ -169,7 +237,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Outlet for nested routes */}
         <div className="mt-6">
           <Outlet />
         </div>
