@@ -37,7 +37,6 @@ const AllArticlesPage = () => {
           tags: selectedTags.join(','),
         },
       });
-      // Filter only the articles with the status "Approved"
       const approvedArticles = response.data.filter(
         (article) => article.status === 'Approved'
       );
@@ -54,118 +53,126 @@ const AllArticlesPage = () => {
   }, [searchQuery, selectedPublisher, selectedTags]);
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">All Articles</h1>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800 border-b-4 border-red-500 pb-4 inline-block">
+          All Articles
+        </h1>
 
-      {/* Search Bar and Filters */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="w-full max-w-md">
-          <input
-            type="text"
-            placeholder="Search by title"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-500"
-          />
-        </div>
+        {/* Search Bar and Filters */}
+        <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+          <div className="flex flex-col md:flex-row gap-4 items-stretch">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search by title"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-6 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
+              />
+            </div>
 
-        <div className="flex space-x-4">
-          {/* Publisher Filter */}
-          <select
-            onChange={(e) => setSelectedPublisher(e.target.value)}
-            value={selectedPublisher}
-            className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Publishers</option>
-            {publishers.map((publisher) => (
-              <option key={publisher._id} value={publisher._id}>
-                {publisher.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Tags Filter */}
-          <select
-            onChange={(e) => setSelectedTags([e.target.value])}
-            value={selectedTags}
-            className="px-4 py-2 border rounded-md focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="">All Tags</option>
-            {tags.map((tag) => (
-              <option key={tag.id} value={tag.name}>
-                {tag.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Articles Listing */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {isLoading ? (
-          <div className="text-center col-span-3">Loading...</div>
-        ) : articles.length === 0 ? (
-          <div className="text-center col-span-3 text-gray-500">
-            No approved articles found.
-          </div>
-        ) : (
-          articles.map((article) => {
-            const publisher = publishers.find(
-              (pub) => pub._id === article.publisher
-            );
-
-            return (
-              <div
-                key={article._id}
-                className={`p-6 border rounded-lg shadow-md ${
-                  article.plan ? 'bg-yellow-100' : 'bg-white'
-                }`}
+            <div className="flex flex-col md:flex-row gap-4">
+              <select
+                onChange={(e) => setSelectedPublisher(e.target.value)}
+                value={selectedPublisher}
+                className="px-6 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 bg-white"
               >
-                <img
-                  src={article.imageUrl}
-                  alt={article.title}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <div className="flex gap-2 items-center">
-                  <img
-                    className="w-10 h-10 rounded-full"
-                    src={article.publisherLogo || '/default-logo.png'}
-                    alt={article.PublisherName || 'Publisher'}
-                  />
-                  <p>{article.PublisherName || 'Unknown Publisher'}</p>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{article.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">{article.description}</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">{publisher?.name}</span>
-                  <span
-                    className={`text-sm font-semibold ${
-                      article.plan ? 'text-red-500' : 'text-gray-500'
-                    }`}
-                  >
-                    {article.
-plan ? 'premium' : 'normal'}
-                  </span>
-                </div>
+                <option value="">All Publishers</option>
+                {publishers.map((publisher) => (
+                  <option key={publisher._id} value={publisher._id}>
+                    {publisher.name}
+                  </option>
+                ))}
+              </select>
 
-                {/* Details Button */}
-                <Link
-                  to={`/article/${article._id}`}
-                  className={`mt-4 inline-block py-2 px-4 text-white rounded-md ${
-                    article.plan && !article.isSubscribed
-                      ? 'bg-gray-500 cursor-not-allowed'
-                      : 'bg-purple-600 hover:bg-purple-700'
+              <select
+                onChange={(e) => setSelectedTags([e.target.value])}
+                value={selectedTags}
+                className="px-6 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 bg-white"
+              >
+                <option value="">All Tags</option>
+                {tags.map((tag) => (
+                  <option key={tag.id} value={tag.name}>
+                    {tag.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Articles Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {isLoading ? (
+            <div className="text-center col-span-3 py-20 text-xl text-gray-600">
+              Loading...
+            </div>
+          ) : articles.length === 0 ? (
+            <div className="text-center col-span-3 py-20 text-xl text-gray-600">
+              No approved articles found.
+            </div>
+          ) : (
+            articles.map((article) => {
+              const publisher = publishers.find(
+                (pub) => pub._id === article.publisher
+              );
+
+              return (
+                <div
+                  key={article._id}
+                  className={`bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 ${
+                    article.plan ? 'ring-2 ring-red-500' : ''
                   }`}
-                  disabled={article.plan && !article.isSubscribed}
                 >
-                  {article.plan && !article.isSubscribed
-                    ? 'Subscribe to View'
-                    : 'View Details'}
-                </Link>
-              </div>
-            );
-          })
-        )}
+                  <div className="relative">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-56 object-cover"
+                    />
+                    {article.plan && (
+                      <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                        Premium
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <img
+                        className="w-10 h-10 rounded-full ring-2 ring-gray-200"
+                        src={article.publisherLogo || '/default-logo.png'}
+                        alt={article.PublisherName || 'Publisher'}
+                      />
+                      <p className="font-medium text-gray-700">{article.PublisherName || 'Unknown Publisher'}</p>
+                    </div>
+                    
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 line-clamp-2">
+                      {article.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {article.description}
+                    </p>
+
+                    <Link
+                      to={`/article/${article._id}`}
+                      className={`w-full block text-center py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
+                        article.plan && !article.isSubscribed
+                          ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                          : 'bg-red-500 text-white hover:bg-red-600'
+                      }`}
+                    >
+                      {article.plan && !article.isSubscribed
+                        ? 'Subscribe to View'
+                        : 'Read Article'}
+                    </Link>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );

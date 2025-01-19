@@ -113,34 +113,7 @@ const AdminDashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-lg">
-        <div className="p-4">
-          <h2 className="text-xl font-bold text-red-600 mb-6">Admin Dashboard</h2>
-          <nav className="space-y-2">
-            <Link
-              to="/admin/users"
-              className="flex items-center gap-2 p-2 rounded hover:bg-red-50 text-gray-700 hover:text-red-600"
-            >
-              <Users size={20} />
-              All Users
-            </Link>
-            <Link
-              to="/admin/articles"
-              className="flex items-center gap-2 p-2 rounded hover:bg-red-50 text-gray-700 hover:text-red-600"
-            >
-              <BookOpen size={20} />
-              All Articles
-            </Link>
-            <Link
-              to="/admin/publishers"
-              className="flex items-center gap-2 p-2 rounded hover:bg-red-50 text-gray-700 hover:text-red-600"
-            >
-              <Building2 size={20} />
-              Add Publisher
-            </Link>
-          </nav>
-        </div>
-      </div>
+     
 
       {/* Main Content */}
       <div className="flex-1 p-8">

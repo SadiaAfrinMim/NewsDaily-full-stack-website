@@ -19,6 +19,7 @@ import AllArticles from "../Pages/Dashboard/AllArticlesPage/AllArticles";
 import AddPublisher from "../Pages/Dashboard/AddPublisher/AddPublisher";
 import SubscriptionSuccess from "../Pages/SubscriptionPage/SubscriptionSuccess";
 import ProfilePage from "../Pages/Profile/ProfilePage";
+import Dashbaord from "../Pages/Dashboard/Dashbaord/Dashbaord";
 
 
 
@@ -74,24 +75,33 @@ export const router = createBrowserRouter([
     element:<MyArticles></MyArticles>
 },
 {
-    path:'/admindashboard',
-    element:<AdminDashboard></AdminDashboard>
+    path:'/dashboard',
+    element:<Dashbaord></Dashbaord>,
+    children:[
+        // {
+        //     path: '/admin',
+        //     element:<AdminDashboard></AdminDashboard>
+
+        // },
+        {
+            path: 'admin/users',
+            element:<AllUsersPage></AllUsersPage>
+        
+        },
+        { 
+            path:'admin/articles',
+            element:<AllArticles></AllArticles>
+        
+        },
+        {
+            path: 'admin/publishers',
+            element:<AddPublisher></AddPublisher>
+        },
+
+    ]
 
 },
-{
-    path: '/admin/users',
-    element:<AllUsersPage></AllUsersPage>
 
-},
-{ 
-    path:'/admin/articles',
-    element:<AllArticles></AllArticles>
-
-},
-{
-    path: '/admin/publishers',
-    element:<AddPublisher></AddPublisher>
-},
 {
     path:'/subscription-success',
     element: <SubscriptionSuccess></SubscriptionSuccess>

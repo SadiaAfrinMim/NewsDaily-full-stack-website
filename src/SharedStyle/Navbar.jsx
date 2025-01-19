@@ -48,7 +48,7 @@ const Navbar = () => {
                 { href: "/all-articles", text: "All Articles" },
                 { href: "/subscription", text: "Subscription", icon: <Crown className="w-4 h-4" /> },
                 { href: "/my-articles", text: "My Articles" },
-                { href: "/admindashboard", text: "Dashboard", icon: <Layout className="w-4 h-4" /> }
+                { href: "/dashboard", text: "Dashboard", icon: <Layout className="w-4 h-4" /> }
               ].map((item) => (
                 <a
                   key={item.text}

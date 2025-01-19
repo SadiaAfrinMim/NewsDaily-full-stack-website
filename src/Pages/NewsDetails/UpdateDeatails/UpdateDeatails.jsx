@@ -4,6 +4,7 @@ import { Loader2, Upload } from 'lucide-react';
 import useAxiosSecure from '../../../Hooks/useAxiosSecure';
 import { imageUpload } from '../../../Api/utils';
 import { useParams } from 'react-router-dom';
+import toast from 'react-hot-toast'; // Import toast
 
 const tagOptions = [
   { value: 'technology', label: 'Technology' },
@@ -30,11 +31,9 @@ const UpdateDetails = () => {
   });
   const [publisherOptions, setPublisherOptions] = useState([]);
 
-  // Fetch the publishers options and the article data when component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch publishers for the select options
         const publisherResponse = await axiosSecure.get('/publishers');
         setPublisherOptions(
           publisherResponse.data.map((pub) => ({
@@ -43,28 +42,25 @@ const UpdateDetails = () => {
           }))
         );
 
-        // Fetch article data
         const articleResponse = await axiosSecure.get(`/articles/${id}`);
         const article = articleResponse.data;
 
-        // Set the form data with the article data
         setFormData({
           title: article.title,
           publisher: {
             value: article.publisher,
-            label: article.publisherName, // Assuming publisherName is stored in the article
+            label: article.publisherName,
           },
           tags: article.tags.map((tag) => ({ value: tag, label: tag })),
           description: article.description,
           image: article.imageUrl,
         });
 
-        // Set image preview if available
         if (article.imageUrl) {
           setImagePreview(article.imageUrl);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        toast.error('Failed to load data. Please try again.'); // Toast for errors
       }
     };
 
@@ -99,6 +95,11 @@ const UpdateDetails = () => {
       };
 
       await axiosSecure.put(`/articles/${id}`, articleData);
+
+      // Show success toast
+      toast.success('Article updated successfully!');
+      
+      // Reset form
       setFormData({
         title: '',
         publisher: null,
@@ -108,7 +109,8 @@ const UpdateDetails = () => {
       });
       setImagePreview(null);
     } catch (error) {
-      console.error('Submission failed:', error);
+      // Show error toast
+      toast.error('Failed to update the article. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

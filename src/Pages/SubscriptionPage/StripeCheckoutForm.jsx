@@ -3,14 +3,15 @@ import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
+import toast from 'react-hot-toast'; // Import React Hot Toast
 
 const StripeCheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
   const { state } = useLocation();
-  const { price, planDuration } = state;  // Get the price and plan duration from the location state
-  const { user, setUser } = useAuth();
+  const { price, planDuration } = state;
+  const { user, setUser, logOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -42,6 +43,7 @@ const StripeCheckoutForm = () => {
 
       if (paymentError) {
         setError(paymentError.message);
+        toast.error('Payment failed. Please try again.'); // Display error toast
       } else if (paymentIntent.status === 'succeeded') {
         const subscriptionEnd = new Date(Date.now() + planDuration);
 
@@ -51,20 +53,28 @@ const StripeCheckoutForm = () => {
           email: user.email,
           premiumTaken: Date.now(),
           subscriptionEnd,
+          isSubscribed: true,
         });
 
         // Set the timeout to log the user out after subscription ends
         const timeout = subscriptionEnd - Date.now();
-        setTimeout(() => {
-          setUser(null);
+        setTimeout(async () => {
+          await axios.put('http://localhost:9000/users/premium-status', {
+            email: user.email,
+            premiumTaken: null,
+            isSubscribed: false,
+          });
+          setUser(null); // Remove user data from auth context
           navigate('/login');
+          toast.success('Your subscription has expired. You have been logged out.'); // Success toast
         }, timeout);
 
-        alert('Payment successful! Premium access granted.');
+        toast.success('Payment successful! Premium access granted.'); // Success toast
         navigate('/subscription-success');
       }
     } catch (err) {
       setError('Payment failed. Please try again.');
+      toast.error('Payment failed. Please try again.'); // Display error toast
     } finally {
       setLoading(false);
     }
