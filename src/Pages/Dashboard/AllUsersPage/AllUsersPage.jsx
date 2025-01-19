@@ -6,8 +6,6 @@ import useAuth from '../../../Hooks/useAuth';
 export default function AllUsersPage() {
   const { user } = useAuth();
   const [users, setUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(10); // Number of users per page
   const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
@@ -43,24 +41,14 @@ export default function AllUsersPage() {
     }
   };
 
-  // Pagination logic
-  const indexOfLastUser = currentPage * usersPerPage;
-  const indexOfFirstUser = indexOfLastUser - usersPerPage;
-  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
-  const totalPages = Math.ceil(users.length / usersPerPage);
-
-  const goToPage = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white ">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h1 className="text-3xl font-bold text-red-800 mb-8 border-b-2 border-red-200 pb-4">
             User Management Dashboard
           </h1>
-
+          
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-red-200">
               <thead>
@@ -73,8 +61,8 @@ export default function AllUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-red-100">
-                {currentUsers.map((user, index) => (
-                  <tr
+                {users.map((user, index) => (
+                  <tr 
                     key={user._id}
                     className={`hover:bg-red-50 transition-colors duration-150 ease-in-out ${
                       index % 2 === 0 ? 'bg-white' : 'bg-red-50/30'
@@ -128,27 +116,6 @@ export default function AllUsersPage() {
                 ))}
               </tbody>
             </table>
-          </div>
-
-          {/* Pagination Controls */}
-          <div className="flex justify-between items-center mt-6">
-            <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md disabled:opacity-50"
-            >
-              Previous
-            </button>
-            <div className="text-sm text-gray-700">
-              Page {currentPage} of {totalPages}
-            </div>
-            <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md disabled:opacity-50"
-            >
-              Next
-            </button>
           </div>
         </div>
       </div>

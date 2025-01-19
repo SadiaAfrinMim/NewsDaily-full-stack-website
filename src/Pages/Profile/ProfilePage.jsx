@@ -1,180 +1,288 @@
-import React, { useState, useEffect } from "react";
-import toast from "react-hot-toast";
-import axios from "axios";
-import useAxiosSecure from "../../Hooks/useAxiosSecure";
-import useAuth from "../../Hooks/useAuth";
+import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
+import { Edit2, Save, X, User } from 'lucide-react';
+import useAxiosSecure from '../../Hooks/useAxiosSecure';
+import useAuth from '../../Hooks/useAuth';
 
-const ProfilePage = () => {
-    const {user} = useAuth()
-  const [userData, setUserData] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({});
-  const [imageFile, setImageFile] = useState(null);  // State to handle the uploaded file
+const UserProfiles = () => {
   const axiosSecure = useAxiosSecure();
+  const {user} = useAuth()
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingState, setEditingState] = useState({});
+  const [editForms, setEditForms] = useState({});
 
-  // Fetch user data
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await axiosSecure.get("/users"); // Adjust API endpoint
-        setUserData(response.data);
-        setFormData(response.data); // Initialize form with user data
+        setLoading(true);
+        const response = await axiosSecure.get('/users');
+
+        const matchedUser = response.data.find((usr) => usr.email === user.email);
+
+        if (matchedUser) {
+          setUsers([matchedUser]);
+        } else {
+          setUsers([]);
+        }
+
+        const initialEditState = {};
+        initialEditState[matchedUser._id] = false;
+        setEditingState(initialEditState);
+
+        const initialForms = {};
+        initialForms[matchedUser._id] = {
+          name: matchedUser.name,
+          email: matchedUser.email,
+          image: matchedUser.image,
+          role: matchedUser.role,
+          plan: matchedUser.plan,
+          isSubscribed: matchedUser.isSubscribed,
+        };
+        setEditForms(initialForms);
       } catch (error) {
-        console.error("Failed to fetch user data:", error);
-        toast.error("Failed to load profile data");
+        console.error('Error fetching users:', error);
+        toast.error('Failed to load users data');
+      } finally {
+        setLoading(false);
       }
     };
-    fetchUserData();
+
+    fetchUsers();
   }, [axiosSecure]);
 
-  // Handle input changes (name, email, etc.)
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleEditToggle = (userId) => {
+    setEditingState(prev => {
+      const newState = { ...prev };
+      if (newState[userId]) {
+        // Reset form to original values if canceling
+        setEditForms(prevForms => ({
+          ...prevForms,
+          [userId]: {
+            name: users.find(u => u._id === userId).name,
+            email: users.find(u => u._id === userId).email,
+            image: users.find(u => u._id === userId).image,
+            role: users.find(u => u._id === userId).role,
+            plan: users.find(u => u._id === userId).plan,
+            isSubscribed: users.find(u => u._id === userId).isSubscribed
+          }
+        }));
+      }
+      newState[userId] = !newState[userId];
+      return newState;
+    });
   };
 
-  // Handle image file change
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-    }
+  const handleInputChange = (userId, e) => {
+    const { name, value, type, checked } = e.target;
+    setEditForms(prev => ({
+      ...prev,
+      [userId]: {
+        ...prev[userId],
+        [name]: type === 'checkbox' ? checked : value
+      }
+    }));
   };
 
-  // Handle profile update
-  const handleUpdate = async () => {
+  const handleSubmit = async (e, email) => {
+    e.preventDefault();
     try {
-      const updatedData = { ...formData };
+      const userToUpdate = users.find(user => user.email === user.email); // Find user by email
+      if (!userToUpdate) {
+        toast.error('User not found');
+        return;
+      }
+  
+      // Perform the patch request
+      const response = await axiosSecure.patch(`/users/${email}`, editForms[email]);
       
-      // If an image file is selected, send it to the server
-      if (imageFile) {
-        const formData = new FormData();
-        formData.append("image", imageFile);  // Append the image to form data
-
-        const uploadResponse = await axiosSecure.post(`https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_API_KEY}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        // Assuming the backend returns the image URL
-        updatedData.image = uploadResponse.data.imageUrl;
-      }
-
-      // Send the updated data to the server
-      const response = await axiosSecure.patch("/users", updatedData); // Adjust API endpoint
-      if (response.status === 200) {
-        setUserData(response.data);
-        setIsEditing(false);
-        setImageFile(null); // Reset file state
-        toast.success("Profile updated successfully");
-      }
+      // Update the state with the modified user
+      setUsers(prev =>
+        prev.map(usere =>
+          usere.email === user.email ? { ...user, ...response.data } : user
+        )
+      );
+  
+      // Close the edit mode for the user
+      setEditingState(prev => ({ ...prev, [email]: false }));
+      toast.success('Profile updated successfully');
     } catch (error) {
-      console.error("Failed to update profile:", error);
-      toast.error("Failed to update profile");
+      console.error('Error updating user:', error);
+      toast.error('Failed to update profile');
     }
   };
+  
 
-  if (!userData) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
-  const userInfoFields = [
-    { label: "Role", value: userData.role },
-    { label: "Plan", value: userData.plan },
-    { label: "Subscription End", value: new Date(userData.subscriptionEnd).toLocaleString() },
-    { label: "Premium Taken", value: new Date(userData.premiumTaken).toLocaleString() },
-  ];
-
-  // Check if user email matches a specific condition
-  const isSpecialUser = userData.email === userData.email; // Example email condition
+  if (!users.length) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">No users found</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-5">My Profile</h1>
-      <div className="card shadow-lg p-5 bg-white">
-        <div className="flex items-center space-x-5">
-          <img
-            src={userData.image || "/placeholder-avatar.png"}
-            alt="User Avatar"
-            className="w-24 h-24 rounded-full border"
-          />
-          <div>
-            {isEditing ? (
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="input input-bordered"
-              />
-            ) : (
-              <h2 className="text-xl font-semibold">{userData.name}</h2>
-            )}
-            {isEditing ? (
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="input input-bordered mt-2"
-              />
-            ) : (
-              <p className="text-sm text-gray-500">{userData.email}</p>
-            )}
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">User Management</h1>
+        
+        {users.map(user => (
+          <div key={user._id} className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
+            <div className="p-6 sm:p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">User Profile</h2>
+                <button
+                  onClick={() => handleEditToggle(user._id)}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium ${
+                    editingState[user._id]
+                      ? 'text-red-600 hover:bg-red-50'
+                      : 'text-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  {editingState[user._id] ? (
+                    <>
+                      <X className="w-4 h-4" />
+                      <span>Cancel</span>
+                    </>
+                  ) : (
+                    <>
+                      <Edit2 className="w-4 h-4" />
+                      <span>Edit Profile</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
-        <div className="mt-5">
-          {/* Dynamically render user info */}
-          {userInfoFields.map((field, index) => (
-            <p key={index}>
-              <strong>{field.label}:</strong> {field.value}
-            </p>
-          ))}
-        </div>
+              <form onSubmit={(e) => handleSubmit(e, user._id)}>
+                <div className="space-y-6">
+                  {/* Profile Image */}
+                  <div className="flex justify-center">
+                    <div className="relative">
+                      {editForms[user._id]?.image ? (
+                        <img
+                          src={editForms[user._id].image}
+                          alt={editForms[user._id].name}
+                          className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center">
+                          <User className="w-16 h-16 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
 
-        {/* Conditional display based on email */}
-        {isSpecialUser && (
-          <div className="mt-5">
-            <p className="text-sm text-green-500">Special user features unlocked!</p>
-          </div>
-        )}
+                  {/* Form Fields */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Name */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Name
+                      </label>
+                      {editingState[user._id] ? (
+                        <input
+                          type="text"
+                          name="name"
+                          value={editForms[user._id]?.name || ''}
+                          onChange={(e) => handleInputChange(user._id, e)}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      ) : (
+                        <p className="p-3 bg-gray-50 rounded-lg text-gray-800">{user.name}</p>
+                      )}
+                    </div>
 
-        {isEditing && (
-          <div className="mt-5">
-            <label className="block text-sm font-medium mb-2">Update Profile Picture</label>
-            <input
-              type="file"
-              onChange={handleImageChange}
-              className="input input-bordered w-full"
-            />
-          </div>
-        )}
+                    {/* Email */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Email
+                      </label>
+                      <p className="p-3 bg-gray-50 rounded-lg text-gray-800">{user.email}</p>
+                    </div>
 
-        <div className="mt-5">
-          {isEditing ? (
-            <div className="flex space-x-3">
-              <button className="btn btn-primary" onClick={handleUpdate}>
-                Save Changes
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setIsEditing(false)}
-              >
-                Cancel
-              </button>
+                    {/* Role */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Role
+                      </label>
+                      <p className="p-3 bg-gray-50 rounded-lg text-gray-800 capitalize">{user.role}</p>
+                    </div>
+
+                    {/* Plan */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Plan
+                      </label>
+                      <p className="p-3 bg-gray-50 rounded-lg text-gray-800 capitalize">{user.plan}</p>
+                    </div>
+
+                    {/* Image URL */}
+                    {editingState[user._id] && (
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Profile Image URL
+                        </label>
+                        <input
+                          type="text"
+                          name="image"
+                          value={editForms[user._id]?.image || ''}
+                          onChange={(e) => handleInputChange(user._id, e)}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        />
+                      </div>
+                    )}
+
+                    {/* Subscription Status */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Subscription Status
+                      </label>
+                      <p className="p-3 bg-gray-50 rounded-lg text-gray-800">
+                        {user.isSubscribed ? 'Subscribed' : 'Not Subscribed'}
+                      </p>
+                    </div>
+
+                    {/* Premium Taken Date */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Premium Taken
+                      </label>
+                      <p className="p-3 bg-gray-50 rounded-lg text-gray-800">
+                        {user.premiumTaken
+                          ? new Date(user.premiumTaken).toLocaleDateString()
+                          : 'Not taken'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  {editingState[user._id] && (
+                    <div className="flex justify-end mt-6">
+                      <button
+                        type="submit"
+                        className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                      >
+                        <Save className="w-4 h-4" />
+                        <span>Save Changes</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </form>
             </div>
-          ) : (
-            <button
-              className="btn btn-accent"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit Profile
-            </button>
-          )}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default ProfilePage;
+export default UserProfiles;
