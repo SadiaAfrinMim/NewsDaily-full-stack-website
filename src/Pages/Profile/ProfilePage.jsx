@@ -17,29 +17,32 @@ const UserProfiles = () => {
       try {
         setLoading(true);
         const response = await axiosSecure.get('/users');
-
+        console.log('Fetched users:', response.data);  // Add this to check the response
+  
         const matchedUser = response.data.find((usr) => usr.email === user.email);
-
+  
         if (matchedUser) {
           setUsers([matchedUser]);
         } else {
           setUsers([]);
         }
-
+  
         const initialEditState = {};
-        initialEditState[matchedUser._id] = false;
-        setEditingState(initialEditState);
-
-        const initialForms = {};
-        initialForms[matchedUser._id] = {
-          name: matchedUser.name,
-          email: matchedUser.email,
-          image: matchedUser.image,
-          role: matchedUser.role,
-          plan: matchedUser.plan,
-          isSubscribed: matchedUser.isSubscribed,
-        };
-        setEditForms(initialForms);
+        if (matchedUser) {
+          initialEditState[matchedUser._id] = false;
+          setEditingState(initialEditState);
+  
+          const initialForms = {};
+          initialForms[matchedUser._id] = {
+            name: matchedUser.name,
+            email: matchedUser.email,
+            image: matchedUser.image,
+            role: matchedUser.role,
+            plan: matchedUser.plan,
+            isSubscribed: matchedUser.isSubscribed,
+          };
+          setEditForms(initialForms);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to load users data');
@@ -47,10 +50,17 @@ const UserProfiles = () => {
         setLoading(false);
       }
     };
-
-    fetchUsers();
-  }, [axiosSecure]);
-
+  
+    // Log the `user` from useAuth to check if it's available
+    console.log('Current user:', user);
+  
+    if (user?.email) {
+      fetchUsers();
+    } else {
+      console.log('User email not available.');
+    }
+  }, [axiosSecure, user]);  // Re-run when user or axiosSecure changes
+  
   const handleEditToggle = (userId) => {
     setEditingState(prev => {
       const newState = { ...prev };
@@ -84,27 +94,30 @@ const UserProfiles = () => {
     }));
   };
 
-  const handleSubmit = async (e, email) => {
+  const handleSubmit = async (e, id) => {
     e.preventDefault();
-    try {
-      const userToUpdate = users.find(user => user.email === user.email); // Find user by email
-      if (!userToUpdate) {
-        toast.error('User not found');
-        return;
-      }
+    
+    // Ensure editForms has data for the user we want to update
+    const userToUpdate = editForms[id];
+    
+    if (!userToUpdate) {
+      toast.error('User not found');
+      return;
+    }
   
-      // Perform the patch request
-      const response = await axiosSecure.patch(`/users/${email}`, editForms[email]);
+    try {
+      // Perform the PATCH request with the user's ID and updated data
+      const response = await axiosSecure.patch(`/users/${id}`, userToUpdate);
       
-      // Update the state with the modified user
+      // Update the state with the modified user data
       setUsers(prev =>
-        prev.map(usere =>
-          usere.email === user.email ? { ...user, ...response.data } : user
+        prev.map(user =>
+          user._id === id ? { ...user, ...response.data } : user
         )
       );
   
       // Close the edit mode for the user
-      setEditingState(prev => ({ ...prev, [email]: false }));
+      setEditingState(prev => ({ ...prev, [id]: false }));
       toast.success('Profile updated successfully');
     } catch (error) {
       console.error('Error updating user:', error);
@@ -112,6 +125,7 @@ const UserProfiles = () => {
     }
   };
   
+
 
   if (loading) {
     return (

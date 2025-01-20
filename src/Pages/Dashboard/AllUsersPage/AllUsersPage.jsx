@@ -8,6 +8,10 @@ export default function AllUsersPage() {
   const [users, setUsers] = useState([]);
   const axiosSecure = useAxiosSecure();
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5); // Number of users to show per page
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -21,6 +25,7 @@ export default function AllUsersPage() {
     fetchUsers();
   }, [axiosSecure]);
 
+  // Handle role change (as before)
   const handleRoleChange = async (userId, newRole) => {
     try {
       const response = await axiosSecure.patch(`/users/${userId}/role`, {
@@ -41,6 +46,14 @@ export default function AllUsersPage() {
     }
   };
 
+  // Get current users based on page
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+
+  // Handle page change
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white ">
       <div className="max-w-7xl mx-auto">
@@ -48,7 +61,7 @@ export default function AllUsersPage() {
           <h1 className="text-3xl font-bold text-red-800 mb-8 border-b-2 border-red-200 pb-4">
             User Management Dashboard
           </h1>
-          
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-red-200">
               <thead>
@@ -61,7 +74,7 @@ export default function AllUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-red-100">
-                {users.map((user, index) => (
+                {currentUsers.map((user, index) => (
                   <tr 
                     key={user._id}
                     className={`hover:bg-red-50 transition-colors duration-150 ease-in-out ${
@@ -116,6 +129,24 @@ export default function AllUsersPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-4 py-2 mx-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage * usersPerPage >= users.length}
+              className="px-4 py-2 mx-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-gray-400"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

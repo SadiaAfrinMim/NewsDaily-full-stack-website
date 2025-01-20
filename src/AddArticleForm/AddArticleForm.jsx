@@ -37,23 +37,27 @@ const AddArticleForm = () => {
     const fetchUserData = async () => {
       try {
         const response = await axiosSecure.get('/users');
-        const filteredData = response.data.filter((use) => use.email === user.email);
-        if (filteredData.length > 0) {
-          setUserData(
-            filteredData.map((use) => ({
-              email: use.email,
-              role: use.role,
-              plan: use.plan,
-              timestamp: use.timestamp,
-            }))
-          );
+        console.log('All Users:', response.data);
+  
+        const currentUser = response.data.find((u) => u.email === user?.email); // Use find for single match
+        console.log('Current User:', currentUser);
+  
+        if (currentUser) {
+          setUserData(currentUser); // Directly set the user object
+        } else {
+          console.log('User not found in database');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
+        toast.error('Error loading user data');
       }
     };
-    fetchUserData();
-  }, []);
+  
+    if (user?.email) {
+      fetchUserData();
+    }
+  }, [user, axiosSecure]);
+  
 
   useEffect(() => {
     const fetchPublishers = async () => {
@@ -109,6 +113,16 @@ const AddArticleForm = () => {
         updatedAt: new Date().toISOString(),
         email: user?.email,
         AuthorImage: user?.photoURL,
+       
+        
+           role: userData?.role, // From fetched userData
+        plan: userData?.plan, // From fetched userData
+        
+isSubscribed:userData?.isSubscribed
+      
+
+
+
       };
 
       await axiosSecure.post('/articles', articleData);
