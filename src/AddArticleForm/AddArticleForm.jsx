@@ -115,10 +115,9 @@ const AddArticleForm = () => {
         AuthorImage: user?.photoURL,
        
         
-           role: userData?.role, // From fetched userData
-        plan: userData?.plan, // From fetched userData
-        
-isSubscribed:userData?.isSubscribed
+          userEmail: userData?.email, // From fetched userData
+          
+       
       
 
 
@@ -126,6 +125,7 @@ isSubscribed:userData?.isSubscribed
       };
 
       await axiosSecure.post('/articles', articleData);
+   
 
       // Success toast
       toast.success('Article submitted successfully!');
@@ -147,6 +147,8 @@ isSubscribed:userData?.isSubscribed
       setIsSubmitting(false);
     }
   };
+
+ 
 
   return (
     <div className="max-w-3xl mx-auto p-6">
