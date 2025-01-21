@@ -74,7 +74,7 @@ const SignUp = () => {
                 name='name'
                 id='name'
                 placeholder='Enter Your Name Here'
-                className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
+                className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-red-500 bg-gray-200 text-gray-900'
                 data-temp-mail-org='0'
               />
             </div>
@@ -100,7 +100,7 @@ const SignUp = () => {
                 id='email'
                 required
                 placeholder='Enter Your Email Here'
-                className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
+                className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-red-500 bg-gray-200 text-gray-900'
                 data-temp-mail-org='0'
               />
             </div>
@@ -117,7 +117,7 @@ const SignUp = () => {
                 id='password'
                 required
                 placeholder='*******'
-                className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
+                className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-red-500 bg-gray-200 text-gray-900'
               />
             </div>
           </div>
@@ -125,7 +125,7 @@ const SignUp = () => {
           <div>
             <button
               type='submit'
-              className='bg-lime-500 w-full rounded-md py-3 text-white'
+              className='bg-red-500 w-full rounded-md py-3 text-white'
             >
               {loading ? (
                 <TbFidgetSpinner className='animate-spin m-auto' />
@@ -154,7 +154,7 @@ const SignUp = () => {
           Already have an account?{' '}
           <Link
             to='/login'
-            className='hover:underline hover:text-lime-500 text-gray-600'
+            className='hover:underline hover:text-red-500 text-gray-600'
           >
             Login
           </Link>

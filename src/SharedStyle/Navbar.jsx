@@ -8,6 +8,7 @@ const Navbar = () => {
   const { user, logOut } = useAuth();
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = React.useState(false);
+
   const [hasSubscription, setHasSubscription] = React.useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
@@ -62,13 +63,13 @@ const Navbar = () => {
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
                 </a>
               ))}
-
-              {hasSubscription && (
+{/* 
+              {hasSubscription && ( */}
                 <a href="/premium" className="bg-yellow-500 text-black px-4 py-2 rounded-md flex items-center hover:bg-yellow-400 transition-colors duration-200">
                   <Crown className="w-4 h-4 mr-1" />
                   Premium
                 </a>
-              )}
+              {/* )} */}
             </div>
 
             {/* Auth Section with enhanced styling */}
@@ -91,6 +92,7 @@ const Navbar = () => {
                         <a href="/profile" className="block px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200">
                           My Profile
                         </a>
+                        <a href="/subscription-success" className="block px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200">Account</a>
                         <button
                           onClick={handleLogout}
                           className="w-full text-left px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200"
@@ -142,6 +144,7 @@ const Navbar = () => {
               {user ? (
                 <>
                   <a href="/profile" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">My Profile</a>
+                  <a href="/subscription-success" className="block px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200">Account</a>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-3 py-2 rounded-md hover:bg-red-700 transition-colors duration-200"
@@ -154,6 +157,7 @@ const Navbar = () => {
                   <Link to="/login" className="block w-full text-left px-3 py-2 rounded-md bg-red-700 hover:bg-red-600 transition-colors duration-200">
                     Login
                   </Link>
+                  
                   <Link to="/signup" className="block w-full text-left px-3 py-2 rounded-md bg-white text-red-700 hover:bg-red-50 transition-colors duration-200">
                     Register
                   </Link>

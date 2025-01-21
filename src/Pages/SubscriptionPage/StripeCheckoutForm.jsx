@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
 import toast from 'react-hot-toast'; // Import React Hot Toast
+import useAxiosSecure from '../../Hooks/useAxiosSecure';
 
 const StripeCheckoutForm = () => {
   const stripe = useStripe();
@@ -14,6 +15,7 @@ const StripeCheckoutForm = () => {
   const { user, setUser, logOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const axiosSecure = useAxiosSecure()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ const StripeCheckoutForm = () => {
     }
 
     try {
-      const { data: { clientSecret } } = await axios.post('http://localhost:9000/create-payment-intent', {
+      const { data: { clientSecret } } = await axiosSecure.post('/create-payment-intent', {
         amount: price * 100, // Convert dollars to cents
       });
 
@@ -48,7 +50,7 @@ const StripeCheckoutForm = () => {
         const subscriptionEnd = new Date(Date.now() + planDuration);
 
         // Update user with subscription info
-        await axios.put('http://localhost:9000/users/premium-status', {
+        await axiosSecure.put('/users/premium-status', {
           plan: "premium",
           email: user.email,
           premiumTaken: Date.now(),
@@ -59,7 +61,7 @@ const StripeCheckoutForm = () => {
         // Set the timeout to log the user out after subscription ends
         const timeout = subscriptionEnd - Date.now();
         setTimeout(async () => {
-          await axios.put('http://localhost:9000/users/premium-status', {
+          await axiosSecure.put('/users/premium-status', {
             email: user.email,
             premiumTaken: null,
             isSubscribed: false,

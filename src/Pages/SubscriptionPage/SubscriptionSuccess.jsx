@@ -21,15 +21,15 @@ const SubscriptionSuccess = () => {
   }, [axiosSecure]);
 
   if (!users.length) {
-    return <div>Loading...</div>; // Show a loading state until user data is fetched
+    return <span className="loading text-center loading-spinner text-error"></span>; // Show a loading state until user data is fetched
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold text-center mb-6">Subscription Successful!</h1>
+    <div className="container lg:max-w-2xl mx-auto p-4">
+      <h1 className="text-3xl border-b-4 pb-2   border-red-600 font-bold text-center mb-6">Subscription Successful!</h1>
 
       {users.map((user, index) => (
-        <div key={index} className="bg-white p-6 rounded-lg shadow-md mb-6">
+        <div key={index} className="bg-white border border-gray-200 p-6 rounded-lg shadow-md mb-6">
           <div className="flex items-center mb-4">
             <img src={user.image} alt={user.name} className="w-16 h-16 rounded-full mr-4" />
             <div>

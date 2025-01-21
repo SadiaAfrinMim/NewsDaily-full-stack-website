@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
+import { FaCheckCircle, FaCreditCard } from 'react-icons/fa'; // React Icons
 
 const SubscriptionPage = () => {
   const { user, setUser } = useAuth();
@@ -50,45 +51,60 @@ const SubscriptionPage = () => {
       setLoading(false);
     }
   };
-
   return (
-    <div className="container mx-auto p-4">
-      <div className="banner bg-blue-600 text-white p-6 rounded-lg text-center">
-        <h1 className="text-3xl font-bold">Upgrade to Premium</h1>
-        <p>Get access to exclusive content and features.</p>
+    <div className="container lg:max-w-2xl border-gray-200 border mx-auto ">
+      <div className="banner bg-gradient-to-r  from-red-500 to-red-600 text-white p-8 rounded-t-lg text-center shadow-xl">
+        <h1 className="text-4xl font-semibold mb-2">Upgrade to Premium</h1>
+        <p className="text-lg">Unlock exclusive content and features for a better experience.</p>
+      </div>
+       {/* Relevant Article Section */}
+       <div className="m-6 m border-b-red-600  border-4 bg-gray-100 p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-semibold text-gray-700">Why Choose Premium?</h3>
+        <p className="mt-4 text-gray-600">
+          Upgrading to Premium offers more flexibility and additional features such as access to exclusive content, priority support, and faster processing times. Stay ahead with our top-tier services!
+        </p>
+        <a
+          href="#"
+          className="mt-4 inline-block text-red-600 hover:text-red-700 font-semibold"
+        >
+          Learn More about Premium Features
+        </a>
       </div>
 
-      <div className="mt-8 bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold">Choose Your Subscription Plan</h2>
-        
-        <div className="mt-4">
-          <label htmlFor="plan" className="block text-lg">Select Subscription Duration:</label>
+      <div className="mt-10 bg-white p-6 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-gray-700">Choose Your Subscription Plan</h2>
+
+        <div className="mt-6">
+          <label htmlFor="plan" className="block text-lg text-gray-600">Select Subscription Duration:</label>
           <select
             id="plan"
             value={selectedPlan}
             onChange={(e) => setSelectedPlan(parseInt(e.target.value))}
-            className="mt-2 w-full p-2 border rounded-lg"
+            className="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
           >
-            <option value={1}>1 minute (For assignment checking)</option>
-            <option value={5}>5 days</option>
-            <option value={10}>10 days</option>
+            <option className='bg-red-600 text-white' value={1}>1 minute (For assignment checking)</option>
+            <option className='bg-red-600 text-white' value={5}>5 days</option>
+            <option className='bg-red-600 text-white' value={10}>10 days</option>
           </select>
         </div>
 
-        <div className="mt-4">
-          <p className="text-lg">Price: ${price}</p>
+        <div className="mt-6 text-lg text-gray-800 font-semibold">
+          <p>Price: <span className="text-red-600">${price}</span></p>
         </div>
 
-        {error && <div className="mt-4 text-red-500">{error}</div>}
+        {error && <div className="mt-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700">{error}</div>}
 
         <button
           onClick={handleSubscription}
-          className="mt-6 w-full py-3 px-4 rounded-lg bg-blue-600 text-white font-medium"
+          className="mt-6 w-full py-3 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition duration-300"
           disabled={loading}
         >
+          {loading ? <FaCreditCard className="animate-spin inline mr-2" /> : <FaCheckCircle className="inline mr-2" />}
           {loading ? 'Processing...' : 'Proceed to Payment'}
         </button>
       </div>
+
+     
     </div>
   );
 };

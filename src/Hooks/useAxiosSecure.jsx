@@ -48,7 +48,7 @@ import useAuth from './useAuth'
 
 export const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials: true,
+//   withCredentials: true,
 })
 
 const useAxiosSecure = () => {
@@ -56,6 +56,7 @@ const useAxiosSecure = () => {
   const { logOut } = useAuth()
   axiosSecure.interceptors.request.use(function (config) {
     const token = localStorage.getItem('access-token')
+    console.log(token)
     // console.log('request stopped by interceptors', token)
     config.headers.authorization = `Bearer ${token}`;
     return config;

@@ -1,62 +1,68 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import useAxiosSecure from '../Hooks/useAxiosSecure';
 import { Search, Filter, X } from 'lucide-react';
-
 
 const AllArticlesPage = () => {
   const axiosSecure = useAxiosSecure();
   const [articles, setArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPublisher, setSelectedPublisher] = useState('');
+  const [selectedTags, setSelectedTags] = useState([]);  // State for selected tags
   const [publishers, setPublishers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [availableTags, setAvailableTags] = useState([]); // State for available tags
 
-  
+  // Fetch publishers and articles
   useEffect(() => {
-    const fetchPublishers = async () => {
+    const fetchPublishersAndArticles = async () => {
       try {
         const publisherResponse = await axiosSecure.get('/publishers');
         setPublishers(publisherResponse.data);
+
+        // Fetch articles
+        const articleResponse = await axiosSecure.get('/articles', {
+          params: {
+            search: searchQuery,
+            publisher: selectedPublisher,
+          },
+        });
+        
+        // Extract tags from articles
+        const tags = articleResponse.data
+          .flatMap((article) => article.tags) // Flatten the tags from each article
+          .filter((tag, index, self) => self.indexOf(tag) === index); // Remove duplicates
+
+        setAvailableTags(tags);
+        setArticles(articleResponse.data);
       } catch (error) {
-        setError('Failed to load filters. Please try again later.');
-        console.error('Failed to fetch publishers', error);
+        setError('Failed to load data. Please try again later.');
+        console.error('Failed to fetch publishers or articles', error);
       }
     };
 
-    fetchPublishers();
-  }, []);
-
-  const fetchArticles = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await axiosSecure.get('/articles', {
-        params: {
-          search: searchQuery,
-          publisher: selectedPublisher,
-        },
-      });
-      const approvedArticles = response.data.filter(
-        (article) => article.status === 'Approved'
-      );
-      setArticles(approvedArticles);
-    } catch (error) {
-      setError('Failed to load articles. Please try again later.');
-      console.error('Error fetching articles:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchArticles();
+    fetchPublishersAndArticles();
   }, [searchQuery, selectedPublisher]);
 
+  // Filter articles based on selected tags and other filters
+  const filteredArticles = articles.filter((article) => {
+    const isMatchingTags = selectedTags.every((tag) =>
+      article.tags.includes(tag) // Check if article's tags include selected tags
+    );
+
+    return (
+      article.status === 'Approved' &&
+      article.isPremium === false &&
+      isMatchingTags
+    );
+  });
+
+  // Clear all filters
   const clearFilters = () => {
     setSearchQuery('');
     setSelectedPublisher('');
+    setSelectedTags([]);
   };
 
   return (
@@ -68,56 +74,73 @@ const AllArticlesPage = () => {
 
         {/* Enhanced Search Bar and Filters */}
         <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
-          <div className="space-y-4">
+          <div className="flex flex-wrap items-center gap-4">
             {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-500" />
               <input
                 type="text"
                 placeholder="Search articles..."
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
+                className="w-full pl-12 pr-6 py-3 border-2 border-gray-200 rounded-full focus:ring-4 focus:ring-red-300 focus:border-red-500 placeholder-gray-500 text-gray-800 transition-all duration-300"
               />
             </div>
 
-            {/* Filter Section */}
-            <div className="flex gap-4">
-              <div className="relative">
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <select
-                  onChange={(e) => setSelectedPublisher(e.target.value)}
-                  value={selectedPublisher}
-                  className="pl-12 pr-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 bg-white"
-                >
-                  <option value="">All Publishers</option>
-                  {publishers.map((publisher) => (
-                    <option key={publisher._id} value={publisher._id}>
-                      {publisher.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Clear Filters Button */}
-              {(searchQuery || selectedPublisher) && (
-                <button
-                  onClick={clearFilters}
-                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-red-500 transition-colors duration-300"
-                >
-                  <X size={16} />
-                  Clear Filters
-                </button>
-              )}
+            {/* Filter Dropdown for Publisher */}
+            <div className="relative">
+              <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-500" />
+              <select
+                onChange={(e) => setSelectedPublisher(e.target.value)}
+                value={selectedPublisher}
+                className="pl-12 pr-4 py-3 border-2 border-gray-200 rounded-full bg-white focus:ring-4 focus:ring-red-300 focus:border-red-500 placeholder-gray-500 text-gray-800 transition-all duration-300"
+              >
+                <option value="">All Publishers</option>
+                {publishers.map((publisher) => (
+                  <option key={publisher._id} value={publisher._id}>
+                    {publisher.name}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {/* Filter Dropdown for Tags */}
+            <div className="relative">
+              <select
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedTags(
+                    value && !selectedTags.includes(value)
+                      ? [...selectedTags, value]
+                      : selectedTags.filter(tag => tag !== value)
+                  );
+                }}
+                value=""
+                className="pl-4 pr-4 py-3 border-2 border-gray-200 rounded-full bg-white focus:ring-4 focus:ring-red-300 focus:border-red-500 placeholder-gray-500 text-gray-800 transition-all duration-300"
+              >
+                <option value="">Select Tags</option>
+                {availableTags.map((tag) => (
+                  <option key={tag} value={tag}>
+                    {tag}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Clear Filters Button */}
+            {(searchQuery || selectedPublisher || selectedTags.length > 0) && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-2 px-6 py-3 text-red-600 bg-red-100 rounded-full hover:bg-red-200 transition-all duration-300 shadow-sm"
+              >
+                <X size={18} className="text-red-600" />
+                Clear Filters
+              </button>
+            )}
           </div>
         </div>
 
         {/* Error Message */}
-        {error && (
-          <div className="text-center mb-8 p-4 bg-red-100 text-red-600 rounded-lg">
-            {error}
-          </div>
-        )}
+     
 
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -125,17 +148,15 @@ const AllArticlesPage = () => {
             <div className="text-center col-span-3 py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent mx-auto"></div>
             </div>
-          ) : articles.length === 0 ? (
+          ) : filteredArticles.length === 0 ? (
             <div className="text-center col-span-3 py-20 text-xl text-gray-600">
-              No articles found matching your criteria.
+              <span className="loading loading-spinner text-error"></span>
             </div>
           ) : (
-            articles.map((article) => (
+            filteredArticles.map((article) => (
               <div
                 key={article._id}
-                className={`bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 ${
-                  article.plan ? 'ring-2 ring-red-500' : ''
-                }`}
+                className={`bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300`}
               >
                 <div className="relative">
                   <img
@@ -143,13 +164,8 @@ const AllArticlesPage = () => {
                     alt={article.title}
                     className="w-full h-56 object-cover"
                   />
-                  {article.plan && (
-                    <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      Premium
-                    </div>
-                  )}
                 </div>
-                
+
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <img
@@ -161,7 +177,7 @@ const AllArticlesPage = () => {
                       {article.PublisherName || 'Unknown Publisher'}
                     </p>
                   </div>
-                  
+
                   <h3 className="text-xl font-bold mb-3 text-gray-800 line-clamp-2">
                     {article.title}
                   </h3>
@@ -171,15 +187,9 @@ const AllArticlesPage = () => {
 
                   <Link
                     to={`/article/${article._id}`}
-                    className={`w-full block text-center py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
-                      article.plan && !article.isSubscribed
-                        ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                        : 'bg-red-500 text-white hover:bg-red-600'
-                    }`}
+                    className="w-full block text-center py-3 px-6 rounded-lg font-semibold border-outline border-red-800 border text-red hover:bg-red-600"
                   >
-                    {article.plan && !article.isSubscribed
-                      ? 'Subscribe to View'
-                      : 'Read Article'}
+                    Read Article
                   </Link>
                 </div>
               </div>

@@ -20,6 +20,7 @@ import AddPublisher from "../Pages/Dashboard/AddPublisher/AddPublisher";
 import SubscriptionSuccess from "../Pages/SubscriptionPage/SubscriptionSuccess";
 import ProfilePage from "../Pages/Profile/ProfilePage";
 import Dashbaord from "../Pages/Dashboard/Dashbaord/Dashbaord";
+import Premium from "../Pages/Primium/Premium";
 
 
 
@@ -75,14 +76,18 @@ export const router = createBrowserRouter([
     element:<MyArticles></MyArticles>
 },
 {
+    path: '/premium',
+    element:<Premium></Premium>
+},
+{
     path:'/dashboard',
-    element:<Dashbaord></Dashbaord>,
+    element:<Dashbaord><AdminDashboard></AdminDashboard></Dashbaord>,
     children:[
-        // {
-        //     path: '/admin',
-        //     element:<AdminDashboard></AdminDashboard>
+        {
+            path: '/dashboard',
+            element:<AdminDashboard></AdminDashboard>
 
-        // },
+        },
         {
             path: 'admin/users',
             element:<AllUsersPage></AllUsersPage>

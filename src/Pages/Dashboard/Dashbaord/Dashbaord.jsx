@@ -9,6 +9,7 @@ const Dashboard = () => {
         <div className="p-4">
           <h2 className="text-xl font-bold text-red-600 mb-6">Admin Dashboard</h2>
           <nav className="space-y-2">
+         
             <NavLink
               to="admin/users"
               className={({ isActive }) =>
