@@ -2,6 +2,9 @@ import { BookOpen, Building2, Users } from 'lucide-react';
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
+// const [isAdmin,setIsAdmin] = useState('null')
+// const DashBoard
+
 const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-gray-100">

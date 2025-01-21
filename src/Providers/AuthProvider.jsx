@@ -48,6 +48,8 @@ const AuthProvider = ({ children }) => {
   }
 
   const logOut = async () => {
+    localStorage.removeItem('user_is_admin')
+    localStorage.removeItem('role')
     setLoading(true)
     try {
       await signOut(auth)

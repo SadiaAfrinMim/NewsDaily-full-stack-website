@@ -10,6 +10,8 @@ import LoadingSpinner from '../../../Component/LoadingSpinner'
 
 import { saveUser } from '../../../Api/utils'
 import useAuth from '../../../Hooks/useAuth'
+import axios from 'axios'
+import { ChartNoAxesColumn } from 'lucide-react'
 
 const Login = () => {
   const { signIn, signInWithGoogle, loading, user } = useAuth()
@@ -26,6 +28,15 @@ const Login = () => {
     const password = form.password.value
 
     try {
+
+      const userType = await axios.post('http://localhost:9000/get-user-type',{
+        email : email
+      })
+      console.log("==============userType:",userType,"============")
+      if (userType) {
+        localStorage.setItem('user_is_admin',userType.data.role);
+        localStorage.setItem('is_subscribed',userType.data.isSubscribed)
+      }
       //User Login
       await signIn(email, password)
 
@@ -40,10 +51,23 @@ const Login = () => {
   // Handle Google Signin
   const handleGoogleSignIn = async () => {
     try {
+
+      const userType = await axios.post('http://localhost:9000/get-user-type',{
+        email : user.email
+      })
+      console.log("==============userType:",userType,"============")
+      if (userType) {
+        localStorage.setItem('user_is_admin',userType.data.role);
+        localStorage.setItem('is_subscribed',userType.data.isSubscribed)
+      }
       //User Registration using google
       const data = await signInWithGoogle()
+
       // save user info in db if the user is new
       await saveUser(data?.user)
+     
+    
+      
       navigate(from, { replace: true })
       toast.success('Login Successful')
     } catch (err) {

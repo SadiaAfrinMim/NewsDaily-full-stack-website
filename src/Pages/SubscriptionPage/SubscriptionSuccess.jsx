@@ -39,7 +39,7 @@ const SubscriptionSuccess = () => {
           </div>
 
           {/* Subscription details table */}
-          <table className="min-w-full table-auto border-collapse border border-gray-200">
+          <table className="min-w-full  table-auto border-collapse border border-gray-200">
             <tbody>
               <tr>
                 <td className="px-4 py-2 font-medium">Plan</td>
