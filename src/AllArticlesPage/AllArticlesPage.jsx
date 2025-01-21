@@ -13,6 +13,23 @@ const AllArticlesPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [availableTags, setAvailableTags] = useState([]); // State for available tags
+    const [isSubscription, setIsSubscription] = useState(false);
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userResponse = await axiosSecure.get('/user'); // API endpoint to get user data
+        setIsSubscription(userResponse.data.map((user) => user.isSubscribed === true));
+// Assuming the API response contains `isSubscription`
+      } catch (error) {
+        console.error('Failed to fetch user data', error);
+        setError('Failed to fetch user data. Please try again later.');
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Fetch publishers and articles
   useEffect(() => {
@@ -144,58 +161,81 @@ const AllArticlesPage = () => {
 
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {isLoading ? (
-            <div className="text-center col-span-3 py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent mx-auto"></div>
+  {isLoading ? (
+    <div className="text-center col-span-3 py-20">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent mx-auto"></div>
+    </div>
+  ) : filteredArticles.length === 0 ? (
+    <div className="text-center col-span-3 py-20 text-xl text-gray-600">
+      <span className="loading loading-spinner text-error"></span>
+    </div>
+  ) : (
+    filteredArticles.map((article) => (
+      <div
+        key={article._id}
+        className={`bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 ${
+          isSubscription
+            ? 'border-4 border-blue-500'
+            : 'border-2 border-gray-200'
+        }`}
+      >
+        <div className="relative">
+          <img
+            src={article.image}
+            alt={article.title}
+            className={`w-full h-56 object-cover ${
+              isSubscription ? 'opacity-100' : 'opacity-75'
+            }`}
+          />
+          {!isSubscription && (
+            <div className="absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
+              <p className="text-white text-lg font-semibold">
+                Subscribe to Access
+              </p>
             </div>
-          ) : filteredArticles.length === 0 ? (
-            <div className="text-center col-span-3 py-20 text-xl text-gray-600">
-              <span className="loading loading-spinner text-error"></span>
-            </div>
-          ) : (
-            filteredArticles.map((article) => (
-              <div
-                key={article._id}
-                className={`bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300`}
-              >
-                <div className="relative">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-56 object-cover"
-                  />
-                </div>
-
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <img
-                      className="w-10 h-10 rounded-full ring-2 ring-gray-200"
-                      src={article.publisherLogo || '/default-logo.png'}
-                      alt={article.PublisherName || 'Publisher'}
-                    />
-                    <p className="font-medium text-gray-700">
-                      {article.PublisherName || 'Unknown Publisher'}
-                    </p>
-                  </div>
-
-                  <h3 className="text-xl font-bold mb-3 text-gray-800 line-clamp-2">
-                    {article.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-3">
-                    {article.description}
-                  </p>
-
-                  <Link
-                    to={`/article/${article._id}`}
-                    className="w-full block text-center py-3 px-6 rounded-lg font-semibold border-outline border-red-800 border text-red hover:bg-red-600"
-                  >
-                    Read Article
-                  </Link>
-                </div>
-              </div>
-            ))
           )}
         </div>
+
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <img
+              className="w-10 h-10 rounded-full ring-2 ring-gray-200"
+              src={article.publisherLogo || '/default-logo.png'}
+              alt={article.PublisherName || 'Publisher'}
+            />
+            <p className="font-medium text-gray-700">
+              {article.PublisherName || 'Unknown Publisher'}
+            </p>
+          </div>
+
+          <h3 className="text-xl font-bold mb-3 text-gray-800 line-clamp-2">
+            {article.title}
+          </h3>
+          <p className="text-gray-600 mb-4 line-clamp-3">
+            {article.description}
+          </p>
+
+          {article.isSubscribed === true ? (
+  <Link
+    to={`/article/${article._id}`}
+    className="w-full block text-center py-3 px-6 rounded-lg font-semibold border-outline border-red-800 border text-red hover:bg-red-600"
+  >
+    Read Article
+  </Link>
+) : (
+  <div
+    className="w-full block text-center py-3 px-6 rounded-lg font-semibold bg-gray-300 text-gray-500 cursor-not-allowed"
+  >
+    Subscribe to Read
+  </div>
+)}
+
+        </div>
+      </div>
+    ))
+  )}
+</div>
+
       </div>
     </div>
   );
