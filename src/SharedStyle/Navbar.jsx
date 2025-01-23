@@ -282,7 +282,7 @@ const Navbar = () => {
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
                   </a>
                 ))}
-              {!hasSubscription && (
+              {!hasSubscription ||  isAdmin || (
                 <a
                   href="/premium"
                   className="bg-yellow-500 text-black px-4 py-2 rounded-md flex items-center hover:bg-yellow-400 transition-colors duration-200"

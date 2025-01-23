@@ -92,7 +92,7 @@ const StripeCheckoutForm = () => {
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full py-3 px-4 rounded-lg text-white font-medium bg-blue-600 hover:bg-blue-700"
+        className="w-full py-3 px-4 rounded-lg text-white font-medium bg-red-600 hover:bg-red-700"
       >
         {loading ? 'Processing...' : `Pay $${price}`}
       </button>

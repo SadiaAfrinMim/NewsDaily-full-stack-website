@@ -22,6 +22,7 @@ import ProfilePage from "../Pages/Profile/ProfilePage";
 import Dashbaord from "../Pages/Dashboard/Dashbaord/Dashbaord";
 import Premium from "../Pages/Primium/Premium";
 import AllPublishers from "../Pages/Dashboard/AdminDashboard/All Publisher/AllPublihser";
+import Error from "../Pages/Error/Error";
 
 
 
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
     {
       path: "/",
       element:<Mainlayout></Mainlayout>,
+      errorElement:<Error></Error>,
       children:[{
         path:"/",
         element:<Home></Home>

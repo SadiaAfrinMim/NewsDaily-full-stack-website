@@ -18,7 +18,7 @@ const Dashboard = () => {
          <img src={user?.photoURL} className='w-20 h-20  border-red-600 border  rounded-full' alt="" srcset="" />
        
          </div>
-         <h2 className='text-center text-red text-xl font-bold'>{user?.displayName}</h2>
+         <h2 className='text-center text-red-600 mt-4 text-xl font-bold'>{user?.displayName}</h2>
           <nav className="space-y-2">
          
             <NavLink

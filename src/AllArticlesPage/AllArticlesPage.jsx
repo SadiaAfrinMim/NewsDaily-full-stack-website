@@ -186,21 +186,25 @@ const AllArticlesPage = () => {
     filteredArticles.map((article) => (
       <div
         key={article._id}
-        className={`bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 ${
+        className={`relative bg-white rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300 ${
           isSubscription
-            ? 'border-4 border-blue-500'
+            ? 'border-2 border-red-500 shadow-red-200'
             : 'border-2 border-gray-200'
         }`}
       >
         <div className="relative">
-        <img
-  src={article.image}
-  alt={article.title}
-  className={`w-full h-56 object-cover ${
-    isSubscription ? 'opacity-100' : 'opacity-75'
-  }`}
-/>
-
+          <img
+            src={article.image}
+            alt={article.title}
+            className={`w-full h-56 object-cover rounded-t-xl ${
+              isSubscription ? 'opacity-100' : 'opacity-75'
+            }`}
+          />
+          {isSubscription && (
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+              Premium
+            </div>
+          )}
           {!isSubscription && (
             <div className="absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
               <p className="text-white text-lg font-semibold">
@@ -225,30 +229,38 @@ const AllArticlesPage = () => {
           <h3 className="text-xl font-bold mb-3 text-gray-800 line-clamp-2">
             {article.title}
           </h3>
-          <p className="text-gray-600 mb-4 line-clamp-3">
-            {article.description}
-          </p>
+          <p className="text-gray-600 mb-4 line-clamp-3">{article.description}</p>
+
+          <div className="flex items-center justify-between text-gray-500 text-sm mb-4">
+            <span className="flex items-center gap-1">
+              <i className="icon-eye"></i> {article.views || 0} views
+            </span>
+            <span className="flex items-center px-3 py-1 rounded-full text-sm font-semibold text-white bg-red-600 gap-1">
+            
+              {(article.tags)}
+            </span>
+          </div>
 
           {isSubscription === true ? (
-  <Link
-    to={`/article/${article._id}`}
-    className="w-full block text-center py-3 px-6 rounded-lg font-semibold border-outline border-red-800 border text-red hover:bg-red-600"
-  >
-    Read Article
-  </Link>
-) : (
-  <div
-    className="w-full block text-center py-3 px-6 rounded-lg font-semibold bg-gray-300 text-gray-500 cursor-not-allowed"
-  >
-    Subscribe to Read
-  </div>
-)}
-
+            <Link
+              to={`/article/${article._id}`}
+              className="w-full block text-center py-3 px-6 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition-colors"
+            >
+              <span className="inline-flex items-center gap-2">
+                <i className="icon-premium"></i> Read Article
+              </span>
+            </Link>
+          ) : (
+            <div className="w-full block text-center py-3 px-6 rounded-lg font-semibold bg-gray-300 text-gray-500 cursor-not-allowed">
+              Subscribe to Read
+            </div>
+          )}
         </div>
       </div>
     ))
   )}
 </div>
+
 
       </div>
     </div>
