@@ -37,7 +37,7 @@ const AddArticleForm = () => {
     const fetchUserData = async () => {
       try {
         const response = await axiosSecure.get('/users');
-        console.log('All Users:', response.data);
+        console.log('All Users:', response.status);
   
         const currentUser = response.data.find((u) => u.email === user?.email); // Use find for single match
         console.log('Current User:', currentUser);
@@ -124,8 +124,12 @@ const AddArticleForm = () => {
 
       };
 
-      await axiosSecure.post('/articles', articleData);
-   
+     const response =  await axiosSecure.post('/articles', articleData);
+    console.log("status code for publishing article: ",response.status)
+    // toast.success(response.status)
+    if (response.status ==204) {
+      toast.warn(response.data.message)
+    }
 
       // Success toast
       toast.success('Article submitted successfully!');
@@ -140,8 +144,9 @@ const AddArticleForm = () => {
       });
       setImagePreview(null);
     } catch (error) {
+      
       // Error toast
-      toast.error('Submission failed. Please try again.');
+      toast.error('You already submitted one article and you do not have subscription, please buy subscription and try again!');
       console.error('Submission failed:', error);
     } finally {
       setIsSubmitting(false);

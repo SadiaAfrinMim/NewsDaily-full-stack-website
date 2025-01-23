@@ -39,8 +39,10 @@ const SubscriptionPage = () => {
       // Calculate the duration in milliseconds
       if (selectedPlan === 1) {
         planDurationInMilliseconds = 1 * 60 * 1000; // 1 minute in milliseconds
+        
       } else {
         planDurationInMilliseconds = selectedPlan * 24 * 60 * 60 * 1000; // Days to milliseconds
+        
       }
 
       // Navigate to the payment page

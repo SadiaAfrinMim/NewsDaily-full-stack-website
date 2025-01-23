@@ -16,7 +16,7 @@ const MyArticles = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axiosSecure.get('/articles');
+        const response = await axiosSecure.get('/articlesss');
         const userArticles = response.data.filter(
           (article) => article.email === user?.email
         );
@@ -164,7 +164,7 @@ const MyArticles = () => {
             <p className="text-gray-700">{declineReason || 'No reason provided'}</p>
             <button
               onClick={closeModal}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
             >
               Close
             </button>

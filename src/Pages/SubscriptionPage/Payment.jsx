@@ -14,7 +14,7 @@ const Payment = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-md mx-auto bg-white rounded-lg shadow p-8">
+      <div className="max-w-md mx-auto bg-white border-b-4 border-red-600 rounded-lg shadow p-8">
         <h2 className="text-2xl font-bold text-center mb-6">Complete Your Payment</h2>
         <div className="mb-8">
           <div className="bg-blue-50 p-4 rounded-lg">

@@ -49,6 +49,7 @@ const AuthProvider = ({ children }) => {
 
   const logOut = async () => {
     localStorage.removeItem('user_is_admin')
+    localStorage.removeItem('is_subscribed')
     localStorage.removeItem('role')
     setLoading(true)
     try {

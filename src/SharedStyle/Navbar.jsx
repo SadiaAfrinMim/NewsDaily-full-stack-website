@@ -183,7 +183,7 @@
 
 
 import React, { useEffect, useState } from 'react';
-import { Menu, Bell, PenSquare, BookOpen, Crown, Layout } from 'lucide-react';
+import { Menu, Bell, PenSquare, BookOpen, Crown, Layout, Newspaper } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../Hooks/useAuth';
 import toast from 'react-hot-toast';
@@ -195,7 +195,7 @@ const Navbar = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
-  const [hasSubscription, setHasSubscription] = React.useState(false);
+  const [hasSubscription, setHasSubscription] = useState(false);
 
   console.log("Inside Navbar!!!")
  
@@ -203,11 +203,18 @@ const Navbar = () => {
   const checkAdminStatus = () => {
     const isAdminFromStorage = localStorage.getItem("user_is_admin");
     setIsAdmin(isAdminFromStorage === "admin"); // Set true only if value is "admin"
+   
   };
 
   const checkSubscriptionStatus = () => {
-    const hasSubscriptionFromStorage = localStorage.getItem("is_subscribed");
-    setHasSubscription(hasSubscriptionFromStorage === "true"); // Set true only if value is "true"
+    const isSubscribedStorage = localStorage.getItem("is_subscribed");
+    if(isSubscribedStorage === "true") {
+      setHasSubscription(true);
+      console.log("has Subscription is now  true")
+    } else {
+      console.log("has subscription still false")
+    }
+   
   };
 
   useEffect(() => {
@@ -243,9 +250,9 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-20">
             {/* Logo & Brand */}
             <div className="flex-shrink-0 flex items-center bg-red-900 p-3 rounded-b-lg shadow-md transform hover:scale-105 transition-transform duration-200">
-              <BookOpen className="h-8 w-8" />
+              <Newspaper className="h-8 w-8" />
               <span className="ml-2 text-2xl font-bold bg-gradient-to-r from-red-100 to-white bg-clip-text text-transparent">
-                ArticleHub
+              NewsDaily
               </span>
             </div>
 
@@ -253,11 +260,12 @@ const Navbar = () => {
             <div className="hidden md:flex items-center space-x-2">
             {[
   { href: "/", text: "Home" },
-  { href: "/add-articles", text: "Add Articles", icon: <PenSquare className="w-4 h-4" /> },
+ user && { href: "/add-articles", text: "Add Articles", icon: <PenSquare className="w-4 h-4" /> },
   { href: "/all-articles", text: "All Articles" },
-  { href: "/subscription", text: "Subscription", icon: <Crown className="w-4 h-4" /> },
-  { href: "/my-articles", text: "My Articles" },
+  user && { href: "/subscription", text: "Subscription", icon: <Crown className="w-4 h-4" /> },
+  user && { href: "/my-articles", text: "My Articles" },
   isAdmin && { href: "/dashboard", text: "Dashboard", icon: <Layout className="w-4 h-4" /> }
+  
 ]
   .filter(Boolean) 
                 //.filter(item => !(item.hideIfAdmin && isAdmin))
@@ -274,7 +282,7 @@ const Navbar = () => {
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
                   </a>
                 ))}
-              {hasSubscription && (
+              {!hasSubscription && (
                 <a
                   href="/premium"
                   className="bg-yellow-500 text-black px-4 py-2 rounded-md flex items-center hover:bg-yellow-400 transition-colors duration-200"
@@ -308,12 +316,14 @@ const Navbar = () => {
                         >
                           My Profile
                         </a>
-                        <a
-                          href="/subscription-success"
-                          className="block px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200"
-                        >
-                          Account
-                        </a>
+                    {
+                        user &&   <a
+                        href="/subscription-success"
+                        className="block px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200"
+                      >
+                        Payment Details
+                      </a>
+                    }
                         <button
                           onClick={handleLogout}
                           className="w-full text-left px-4 py-2 text-gray-800 hover:bg-red-50 transition-colors duration-200"
@@ -363,7 +373,9 @@ const Navbar = () => {
                 { href: "/add-articles", text: "Add Articles" },
                 { href: "/all-articles", text: "All Articles" },
                 { href: "/subscription", text: "Subscription" },
-                { href: "/dashboard", text: "Dashboard", hideIfAdmin: true }
+                isAdmin &&{
+                   href: "/dashboard", text: "Dashboard", hideIfAdmin: true 
+                }
               ]
                 .filter(item => !(item.hideIfAdmin && isAdmin))
                 .map(item => (

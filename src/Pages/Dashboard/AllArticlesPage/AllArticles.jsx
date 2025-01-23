@@ -259,7 +259,7 @@ const AllArticles = () => {
             <textarea
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200"
               rows="4"
               placeholder="Please provide a reason for declining this article..."
             ></textarea>
@@ -271,7 +271,7 @@ const AllArticles = () => {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
                 onClick={() => handleArticleAction("decline", articleToDecline, declineReason)}
               >
                 Submit

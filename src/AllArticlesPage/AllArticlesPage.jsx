@@ -15,12 +15,25 @@ const AllArticlesPage = () => {
   const [availableTags, setAvailableTags] = useState([]); // State for available tags
     const [isSubscription, setIsSubscription] = useState(false);
 
+    useEffect(() => {
+      const isSubscribedStorage = localStorage.getItem('is_subscribed');
+      if (isSubscribedStorage ==='true') {
+        console.log("isSubscribedStorage:", typeof isSubscribedStorage, isSubscribedStorage === 'true');
+        setIsSubscription(true);
+      }
+  }, []); // Empty dependency array ensures this runs once after the component mounts.
 
   useEffect(() => {
+     
+  }, [isSubscription]); // Logs only when isSubscription changes.
+
+  console.log('Updated isSubscription:', isSubscription);
+  useEffect(() => {
+    
     const fetchUserData = async () => {
       try {
-        const userResponse = await axiosSecure.get('/user'); // API endpoint to get user data
-        setIsSubscription(userResponse.data.map((user) => user.isSubscribed === true));
+        const userResponse = await axiosSecure.get('/users'); // API endpoint to get user data
+      
 // Assuming the API response contains `isSubscription`
       } catch (error) {
         console.error('Failed to fetch user data', error);
@@ -180,13 +193,14 @@ const AllArticlesPage = () => {
         }`}
       >
         <div className="relative">
-          <img
-            src={article.image}
-            alt={article.title}
-            className={`w-full h-56 object-cover ${
-              isSubscription ? 'opacity-100' : 'opacity-75'
-            }`}
-          />
+        <img
+  src={article.image}
+  alt={article.title}
+  className={`w-full h-56 object-cover ${
+    isSubscription ? 'opacity-100' : 'opacity-75'
+  }`}
+/>
+
           {!isSubscription && (
             <div className="absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
               <p className="text-white text-lg font-semibold">
@@ -215,7 +229,7 @@ const AllArticlesPage = () => {
             {article.description}
           </p>
 
-          {article.isSubscribed === true ? (
+          {isSubscription === true ? (
   <Link
     to={`/article/${article._id}`}
     className="w-full block text-center py-3 px-6 rounded-lg font-semibold border-outline border-red-800 border text-red hover:bg-red-600"

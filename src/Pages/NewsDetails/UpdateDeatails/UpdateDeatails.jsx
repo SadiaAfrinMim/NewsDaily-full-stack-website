@@ -75,46 +75,79 @@ const UpdateDetails = () => {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+  
+  //   try {
+     
+  //     const articleData = {
+  //       title: formData.title,
+  //       publisher: formData.publisher?.value,
+  //       tags: formData.tags.map((tag) => tag.value),
+  //       description: formData.description,
+  //       image: formData.image, // Save the uploaded or existing image URL
+  //       status: 'pending',
+  //     };
+  
+  //     await axiosSecure.put(`/articles/${id}`, articleData);
+  
+  //     toast.success('Article updated successfully!');
+      
+  //     setFormData({
+  //       title: '',
+  //       publisher: null,
+  //       tags: [],
+  //       description: '',
+  //       image: '',
+  //     });
+  //     setImagePreview(null);
+  //   } catch (error) {
+  //     toast.error('Failed to update the article. Please try again.');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
+  
     try {
-      let imageUrl = '';
-      if (formData.image) {
-        imageUrl = await imageUpload(formData.image);
+      let imageUrl = formData.image;
+  
+      // Check if the image is a new file
+      if (formData.image && formData.image instanceof File) {
+        const uploadedImageUrl = await imageUpload(formData.image); // Upload the image
+        imageUrl = uploadedImageUrl;
       }
-
+  
       const articleData = {
         title: formData.title,
         publisher: formData.publisher?.value,
         tags: formData.tags.map((tag) => tag.value),
         description: formData.description,
-        imageUrl,
+        image: imageUrl, // Set the uploaded or existing image URL
         status: 'pending',
       };
-
+  
       await axiosSecure.put(`/articles/${id}`, articleData);
-
-      // Show success toast
+  
       toast.success('Article updated successfully!');
-      
-      // Reset form
       setFormData({
         title: '',
         publisher: null,
         tags: [],
         description: '',
-        image: null,
+        image: '',
       });
       setImagePreview(null);
     } catch (error) {
-      // Show error toast
       toast.error('Failed to update the article. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">

@@ -9,10 +9,10 @@ import {
   Share2,
   BookmarkPlus,
   MessageSquare,
-  Bell
+  Bell,
+  ArrowRight
 } from 'lucide-react';
 
-// News Categories Showcase Section
 const NewsCategoriesShowcase = () => {
   const categories = [
     {
@@ -94,11 +94,7 @@ const InteractiveNewsExperience = () => {
       title: "Social Sharing",
       description: "Share articles with your network and engage in meaningful discussions"
     },
-    {
-      icon: <BookmarkPlus className="w-6 h-6" />,
-      title: "Save for Later",
-      description: "Bookmark articles to read when you have more time"
-    },
+  
     {
       icon: <MessageSquare className="w-6 h-6" />,
       title: "Community Discussions",
@@ -112,42 +108,50 @@ const InteractiveNewsExperience = () => {
   ];
 
   return (
-    <section className="bg-gradient-to-br from-blue-50 to-purple-50 py-16">
+    <section className="bg-white py-20">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Interactive News Experience</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-red-900 mb-4">Interactive News Experience</h2>
+          <p className="text-red-700 max-w-2xl mx-auto">
             Engage with news in a whole new way through our innovative features
             designed to enhance your reading experience.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
+              className="card bg-gradient-to-br from-red-50 to-red-100 hover:from-red-100 hover:to-red-200 
+                transition-all duration-300 hover:-translate-y-2"
             >
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <div className="text-blue-600">
-                  {feature.icon}
+              <div className="card-body">
+                <div className="w-12 h-12 rounded-full bg-red-200 flex items-center justify-center mb-4">
+                  <div className="text-red-600">
+                    {feature.icon}
+                  </div>
                 </div>
+                <h3 className="text-xl font-bold mb-3 text-red-900">{feature.title}</h3>
+                <p className="text-red-700">{feature.description}</p>
               </div>
-              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
+
+
         </div>
 
-        <div className="mt-12 text-center">
-          <div className="bg-white p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Start Your Journey Today</h3>
-            <p className="text-gray-600 mb-6">
-              Join thousands of readers who are already experiencing the future of news consumption.
-            </p>
-            <button className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-              Get Started Now
-            </button>
+        <div className="mt-16">
+          <div className="card bg-gradient-to-r from-red-600 to-red-700 text-white max-w-2xl mx-auto">
+            <div className="card-body text-center">
+              <h3 className="text-2xl font-bold mb-4">Start Your Journey Today</h3>
+              <p className="mb-6 text-red-100">
+                Join thousands of readers who are already experiencing the future of news consumption.
+              </p>
+              <button className="btn btn-lg bg-white text-red-600 hover:bg-red-100 border-none 
+                font-bold mx-auto">
+                Get Started Now
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -157,9 +161,9 @@ const InteractiveNewsExperience = () => {
 
 export default function ExtraSections() {
   return (
-    <>
+    <div className="min-h-screen">
       <NewsCategoriesShowcase />
       <InteractiveNewsExperience />
-    </>
+    </div>
   );
 }

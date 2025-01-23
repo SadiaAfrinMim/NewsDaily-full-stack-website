@@ -75,11 +75,10 @@ export default function AllUsersPage() {
               </thead>
               <tbody className="divide-y divide-red-100">
                 {currentUsers.map((user, index) => (
-                  <tr 
+                  <tr
                     key={user._id}
-                    className={`hover:bg-red-50 transition-colors duration-150 ease-in-out ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-red-50/30'
-                    }`}
+                    className={`hover:bg-red-50 transition-colors duration-150 ease-in-out ${index % 2 === 0 ? 'bg-white' : 'bg-red-50/30'
+                      }`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -98,11 +97,10 @@ export default function AllUsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          user.role === 'admin'
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
                             ? 'bg-red-100 text-red-800'
                             : 'bg-gray-100 text-gray-800'
-                        }`}
+                          }`}
                       >
                         {user.role}
                       </span>
