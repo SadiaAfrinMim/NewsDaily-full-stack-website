@@ -12,7 +12,7 @@ const MyArticles = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-
+ 
   useEffect(() => {
     const fetchArticles = async () => {
       try {

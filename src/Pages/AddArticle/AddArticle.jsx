@@ -111,7 +111,7 @@ const AddArticle = () => {
       setImagePreview(null);
 
       alert('Article submitted successfully! Waiting for admin approval.');
-      navigate('/articles'); // Redirect to the articles page or any other desired page
+      navigate('/my-articles'); // Redirect to the articles page or any other desired page
     } catch (error) {
       console.error('Error submitting article:', error);
       alert('Error submitting article. Please try again.');

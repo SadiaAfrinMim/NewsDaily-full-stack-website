@@ -1,16 +1,24 @@
-import { BookAIcon, BookOpen, Building2, Home, Users } from 'lucide-react';
+import { BookAIcon, BookOpen, Building2, Home, User, Users } from 'lucide-react';
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import useAuth from '../../../Hooks/useAuth';
 
 // const [isAdmin,setIsAdmin] = useState('null')
 // const DashBoard
 
+
 const Dashboard = () => {
+  const {user} = useAuth()
   return (
     <div className="flex min-h-screen bg-gray-100">
       <div className="w-64 bg-white shadow-lg">
         <div className="p-4">
           <h2 className="text-xl font-bold text-red-600 mb-6">Admin Dashboard</h2>
+         <div className='flex items-center justify-center'>
+         <img src={user?.photoURL} className='w-20 h-20  border-red-600 border  rounded-full' alt="" srcset="" />
+       
+         </div>
+         <h2 className='text-center text-red text-xl font-bold'>{user?.displayName}</h2>
           <nav className="space-y-2">
          
             <NavLink
