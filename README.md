@@ -33,4 +33,5 @@ To get started locally, follow these steps:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/newssite.git
+   git clone client side: https://github.com/Programming-Hero-Web-Course4/b10a12-client-side-SadiaAfrinMim
+   git clone server side: https://github.com/Programming-Hero-Web-Course4/b10a12-server-side-SadiaAfrinMim
