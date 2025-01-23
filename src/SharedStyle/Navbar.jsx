@@ -193,11 +193,11 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-  const [dropdownVisible, setDropdownVisible] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [hasSubscription, setHasSubscription] = useState(false);
 
-  console.log("Inside Navbar!!!")
+ 
  
 
   const checkAdminStatus = () => {
@@ -282,7 +282,7 @@ const Navbar = () => {
                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-white transform scale-x-0 group-hover:scale-x-100 transition-transform duration-200" />
                   </a>
                 ))}
-              {!hasSubscription ||  isAdmin || (
+              {!hasSubscription ||  isAdmin && (
                 <a
                   href="/premium"
                   className="bg-yellow-500 text-black px-4 py-2 rounded-md flex items-center hover:bg-yellow-400 transition-colors duration-200"
@@ -370,14 +370,16 @@ const Navbar = () => {
             <div className="px-2 pt-2 pb-3 space-y-1">
               {[
                 { href: "/", text: "Home" },
-                { href: "/add-articles", text: "Add Articles" },
+                user && { href: "/add-articles", text: "Add Articles" },
                 { href: "/all-articles", text: "All Articles" },
-                { href: "/subscription", text: "Subscription" },
+                user && { href: "/subscription", text: "Subscription" },
+                user && { href: "/my-articles", text: "My Articles" },
                 isAdmin &&{
-                   href: "/dashboard", text: "Dashboard", hideIfAdmin: true 
+                   href: "/dashboard", text: "Dashboard", 
                 }
               ]
-                .filter(item => !(item.hideIfAdmin && isAdmin))
+              .filter(Boolean) 
+                // .filter(item => !(item.hideIfAdmin && isAdmin))
                 .map(item => (
                   <a
                     key={item.text}
@@ -387,7 +389,7 @@ const Navbar = () => {
                     {item.text}
                   </a>
                 ))}
-              {hasSubscription && (
+              {!hasSubscription ||  isAdmin || (
                 <a
                   href="/premium"
                   className="block px-3 py-2 rounded-md bg-yellow-500 text-black hover:bg-yellow-400 transition-colors duration-200"

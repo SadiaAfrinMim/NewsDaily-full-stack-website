@@ -14,6 +14,7 @@ const StripeCheckoutForm = () => {
   const { user, setUser, logOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ const StripeCheckoutForm = () => {
     }
 
     try {
-      const { data: { clientSecret } } = await axios.post('http://localhost:9000/create-payment-intent', {
+      const { data: { clientSecret } } = await axios.post('https://newsite-server.vercel.app/create-payment-intent', {
         amount: price * 100, // Convert dollars to cents
       });
 
@@ -48,24 +49,25 @@ const StripeCheckoutForm = () => {
         const subscriptionEnd = new Date(Date.now() + planDuration);
 
         // Update user with subscription info
-        await axios.put('http://localhost:9000/users/premium-status', {
+        await axios.put('https://newsite-server.vercel.app/users/premium-status', {
           plan: "premium",
           email: user.email,
           premiumTaken: Date.now(),
           subscriptionEnd,
           isSubscribed: true,
         });
-         localStorage.setItem("is_subscribed","true");
+        localStorage.setItem("is_subscribed", "true");
         // Set the timeout to log the user out after subscription ends
         const timeout = subscriptionEnd - Date.now();
         setTimeout(async () => {
-          await axios.put('http://localhost:9000/users/premium-status', {
-            plan:"free",
+          await axios.put('https://newsite-server.vercel.app/users/premium-status', {
+            plan: "free",
             email: user.email,
             premiumTaken: null,
             isSubscribed: false,
           });
           setUser(null); // Remove user data from auth context
+          logOut()
           navigate('/login');
           toast.success('Your subscription has expired. You have been logged out.'); // Success toast
         }, timeout);

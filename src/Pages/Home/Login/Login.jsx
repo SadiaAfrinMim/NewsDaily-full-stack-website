@@ -29,13 +29,13 @@ const Login = () => {
 
     try {
 
-      const userType = await axios.post('http://localhost:9000/get-user-type',{
-        email : email
+      const userType = await axios.post('https://newsite-server.vercel.app/get-user-type', {
+        email: email
       })
-      console.log("==============userType:",userType,"============")
+      console.log("==============userType:", userType, "============")
       if (userType) {
-        localStorage.setItem('user_is_admin',userType.data.role);
-        localStorage.setItem('is_subscribed',userType.data.isSubscribed)
+        localStorage.setItem('user_is_admin', userType.data.role);
+        localStorage.setItem('is_subscribed', userType.data.isSubscribed)
       }
       //User Login
       await signIn(email, password)
@@ -52,22 +52,22 @@ const Login = () => {
   const handleGoogleSignIn = async () => {
     try {
 
-      const userType = await axios.post('http://localhost:9000/get-user-type',{
-        email : user.email
+      const userType = await axios.post('https://newsite-server.vercel.app/get-user-type', {
+        email: user.email
       })
-      console.log("==============userType:",userType,"============")
+      console.log("==============userType:", userType, "============")
       if (userType) {
-        localStorage.setItem('user_is_admin',userType.data.role);
-        localStorage.setItem('is_subscribed',userType.data.isSubscribed)
+        localStorage.setItem('user_is_admin', userType.data.role);
+        localStorage.setItem('is_subscribed', userType.data.isSubscribed)
       }
       //User Registration using google
       const data = await signInWithGoogle()
 
       // save user info in db if the user is new
       await saveUser(data?.user)
-     
-    
-      
+
+
+
       navigate(from, { replace: true })
       toast.success('Login Successful')
     } catch (err) {

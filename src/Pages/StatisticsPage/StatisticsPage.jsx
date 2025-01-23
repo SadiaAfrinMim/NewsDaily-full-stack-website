@@ -14,7 +14,7 @@ const StatisticsPage = () => {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const response = await axiosSecure.get('http://localhost:9000/users');
+        const response = await axiosSecure.get('https://newsite-server.vercel.app/users');
         const users = response.data;
 
         const totalUsers = users.length;

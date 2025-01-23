@@ -7,7 +7,7 @@ Welcome to NewsSite, a platform where users can view, manage, and interact with 
 - **Password**: admin123
 
 ## Live Site URL:
-- [NewsSite Live](https://your-live-site-url.com)
+- [NewsSite Live](https://simple-project-c9ba2.web.app/)
 
 ## Features:
 - **User Registration & Login**: Allows users to register, login, and manage their profiles.
@@ -34,4 +34,3 @@ To get started locally, follow these steps:
 1. Clone this repository:
    ```bash
    git clone https://github.com/your-username/newssite.git
-

@@ -63,6 +63,10 @@ export const router = createBrowserRouter([
     element:<Newsdetails></Newsdetails>
 },
 {
+    path:'/articles/:id',
+    element:<Newsdetails></Newsdetails>
+},
+{
     path:'/subscription',
     element:<SubscriptionPage></SubscriptionPage>
 },
