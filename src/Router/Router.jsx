@@ -23,6 +23,7 @@ import Dashbaord from "../Pages/Dashboard/Dashbaord/Dashbaord";
 import Premium from "../Pages/Primium/Premium";
 import AllPublishers from "../Pages/Dashboard/AdminDashboard/All Publisher/AllPublihser";
 import Error from "../Pages/Error/Error";
+import About from "../About";
 
 
 
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
         path:"/",
         element:<Home></Home>
 
+      },
+      {
+        path:'/about',
+        element:<About></About>
       },
       {
         path:'/profile',

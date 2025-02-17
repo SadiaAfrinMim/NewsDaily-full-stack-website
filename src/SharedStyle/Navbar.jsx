@@ -83,7 +83,8 @@ const Navbar = () => {
   { href: "/all-articles", text: "All Articles" },
   user && { href: "/subscription", text: "Subscription", icon: <Crown className="w-4 h-4" /> },
   user && { href: "/my-articles", text: "My Articles" },
-  isAdmin && { href: "/dashboard", text: "Dashboard", icon: <Layout className="w-4 h-4" /> }
+  isAdmin && { href: "/dashboard", text: "Dashboard", icon: <Layout className="w-4 h-4" /> },
+  { href: "/about", text: "About", icon: <Layout className="w-4 h-4" /> }
   
 ]
   .filter(Boolean) 
