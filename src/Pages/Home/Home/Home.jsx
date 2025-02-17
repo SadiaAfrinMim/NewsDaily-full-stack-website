@@ -4,6 +4,9 @@ import Plans from "../Plans/Plans";
 import StatisticsPage from "../../StatisticsPage/StatisticsPage";
 import ExtraSections from "../../Extrasection/Extrasection";
 import { useNavigate } from "react-router-dom";
+import NewsWebsite from "../../UniqueSection";
+
+
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false);
@@ -65,6 +68,9 @@ const Home = () => {
       <StatisticsPage />
       <Plans />
       <ExtraSections />
+      <NewsWebsite></NewsWebsite>
+      
+      
     </div>
   );
 };
