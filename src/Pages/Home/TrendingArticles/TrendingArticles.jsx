@@ -86,25 +86,17 @@ const TrendingSlider = () => {
   );
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-gray-100 py-6 md:py-12">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="bg-gradient-to-b from-gray-50 to-gray-100  ">
+      <div className=" px-4">
         <div className="flex items-center justify-between mb-6 md:mb-8">
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-red-500 rounded-full blur opacity-25" />
-              <TrendingUp className="relative w-6 h-6 md:w-8 md:h-8 text-red-500" />
-            </div>
-            <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
-              Trending Now
-            </h2>
-          </div>
+         
         </div>
 
         {articles.length > 0 && (
           <div className="relative bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="flex flex-col lg:grid lg:grid-cols-5">
               <div className="relative lg:col-span-3">
-                <div className="aspect-video lg:aspect-auto lg:max-h-screen">
+                <div className="aspect-video h-full w-full ">
                   <img
                     src={articles[activeIndex].image}
                     alt={articles[activeIndex].title}
@@ -143,7 +135,15 @@ const TrendingSlider = () => {
                 }`}>
                 <div className="p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-semibold text-gray-500">More Trending</h4>
+                  <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-red-500 rounded-full blur opacity-25" />
+              <TrendingUp className="relative w-6 h-6 md:w-8 md:h-8 text-red-500" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+              Trending Now
+            </h2>
+          </div>
                     <button
                       onClick={() => setIsMobileExpanded(!isMobileExpanded)}
                       className="lg:hidden p-2 hover:bg-gray-100 rounded-full transition-colors"

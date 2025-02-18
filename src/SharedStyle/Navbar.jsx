@@ -65,7 +65,7 @@ const Navbar = () => {
   return (
     <div className="relative">
       <nav className="bg-gradient-to-r from-red-800 via-red-600 to-red-800 text-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className=" px-4">
           <div className="flex justify-between items-center h-20">
             {/* Logo & Brand */}
             <div className="flex-shrink-0 flex items-center bg-red-900 p-3 rounded-b-lg shadow-md transform hover:scale-105 transition-transform duration-200">

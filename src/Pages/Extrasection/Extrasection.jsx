@@ -12,6 +12,7 @@ import {
   Bell,
   ArrowRight
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const NewsCategoriesShowcase = () => {
   const categories = [
@@ -147,10 +148,10 @@ const InteractiveNewsExperience = () => {
               <p className="mb-6 text-red-100">
                 Join thousands of readers who are already experiencing the future of news consumption.
               </p>
-              <button className="btn btn-lg bg-white text-red-600 hover:bg-red-100 border-none 
+              <Link to={'/login'} className="btn btn-lg bg-white text-red-600 hover:bg-red-100 border-none 
                 font-bold mx-auto">
                 Get Started Now
-              </button>
+              </Link>
             </div>
           </div>
         </div>

@@ -47,15 +47,18 @@ const Dashboard = () => {
             <PilcrowLeftIcon size={20} /> My Profile
           </NavLink>
         </div>
+         {/* Toggle Button */}
+     
       </div>
-      
-      {/* Toggle Button */}
-      <button className="absolute top-4 left-4 md:hidden p-2 bg-red-600 text-white rounded-full" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+      <button className="absolute  right-4 md:hidden p-2 bg-red-600 text-white rounded-full" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
         <Menu size={24} />
       </button>
       
+     
+     
+      
       {/* Main Content */}
-      <div className="flex-1 md:ml-64 p-4 transition-all duration-300">
+      <div className="flex-1 p-4 transition-all duration-300">
         <Outlet />
       </div>
     </div>

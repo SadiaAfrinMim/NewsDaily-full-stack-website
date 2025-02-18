@@ -18,7 +18,7 @@ const NewsWebsite = () => {
   ></div>
   
   {/* Gradient Overlay */}
-  <div className="absolute inset-0 z-20 bg-gradient-to-r from-maroon-800/90 to-red-600/90"></div>
+  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
   
   {/* Content */}
   <div className="relative z-20">
