@@ -48,33 +48,22 @@ const Login = () => {
     }
   }
 
-  // Handle Google Signin
-  const handleGoogleSignIn = async () => {
+   // Handle Google Signin
+   const handleGoogleSignIn = async () => {
     try {
-
-      const userType = await axios.post('https://newsite-server.vercel.app/get-user-type', {
-        email: user.email
-      })
-      console.log("==============userType:", userType, "============")
-      if (userType) {
-        localStorage.setItem('user_is_admin', userType.data.role);
-        localStorage.setItem('is_subscribed', userType.data.isSubscribed)
-      }
       //User Registration using google
       const data = await signInWithGoogle()
-
-      // save user info in db if the user is new
       await saveUser(data?.user)
-
-
-
-      navigate(from, { replace: true })
-      toast.success('Login Successful')
+      navigate('/')
+      toast.success('Signup Successful')
     } catch (err) {
       console.log(err)
       toast.error(err?.message)
     }
   }
+
+  
+ 
   return (
     <div className='flex justify-center items-center min-h-screen bg-white'>
       <div className='flex flex-col max-w-md p-6 rounded-md sm:p-10 bg-gray-100 text-gray-900'>
